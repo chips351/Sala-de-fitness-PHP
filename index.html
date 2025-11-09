@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proiect Sala Fitness</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 min-h-screen p-8 font-sans">
+
+    <h1 class="text-3xl font-bold mb-6">Proiect Sala de Fitness</h1>
+
+    <section class="mb-6">
+        <h2 class="text-2xl font-bold mb-2">Descrierea aplicației</h2>
+        <p class="mb-2">
+            Aplicația are rolul de a gestiona activitățile unei săli de fitness online.
+            Permite administrarea utilizatorilor (admini, antrenori și clienți), gestionarea claselor de antrenament și
+            a înscrierilor clienților la acestea.
+        </p>
+        <h3 class="font-semibold mt-2">Rolurile utilizatorilor:</h3>
+        <ul class="list-disc list-inside ml-4">
+            <li><strong>Admin:</strong> creează, editează și șterge utilizatori, creează/editează/șterge clase,
+                gestionează abonamente și plăți, vizualizează statistici.</li>
+            <li><strong>Antrenor (Trainer):</strong> creează/editează/șterge clase proprii, vizualizează clienți
+                înscriși.</li>
+            <li><strong>Client:</strong> se poate înregistra și loga, vede clasele disponibile, se poate înscrie/retrage
+                de la clase, vizualizează abonamentele și programul personal.</li>
+        </ul>
+    </section>
+
+    <section class="mb-6">
+        <h2 class="text-2xl font-bold mb-2">Creearea bazei de date și a tabelelor</h2>
+        <div class="p-4 overflow-x-auto text-left bg-gray-100 rounded-lg shadow font-mono text-sm text-black">
+            <pre>
+CREATE DATABASE IF NOT EXISTS fitness_db;
+USE fitness_db;
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'trainer', 'client') NOT NULL,
+    phone VARCHAR(20),
+    status ENUM('active', 'inactive') DEFAULT 'active'
+);
+
+CREATE TABLE classes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    trainer_id INT NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    description TEXT,
+    date DATE NOT NULL,
+    time TIME NOT NULL,
+    duration INT,
+    max_clients INT DEFAULT 10,
+    location VARCHAR(100),
+    FOREIGN KEY (trainer_id) REFERENCES users(id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE class_registrations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    class_id INT NOT NULL,
+    client_id INT NOT NULL,
+    registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (class_id) REFERENCES classes(id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (client_id) REFERENCES users(id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE subscriptions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    type ENUM('Basic', 'Premium', 'VIP') NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    status ENUM('active', 'expired') DEFAULT 'active',
+    FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+</pre>
+        </div>
+    </section>
+
+    <section class="mb-6">
+        <h2 class="text-2xl font-bold mb-2">Diagrama ERD</h2>
+        <p class="italic text-gray-600">
+            <img src="imagini/fitness_db_ERD.png" alt="Diagrama ERD" class="w-1/2 mx-left" />
+        </p>
+    </section>
+
+    <section class="mb-6">
+        <h2 class="text-2xl font-bold mt-8">Diagrama UML Admin</h2>
+        <img src="https://uml.planttext.com/plantuml/svg/RP0nRiCm34Nt0Ba3Bn1apr0aHUwGcPPeWu146HJLmMjE4VGElKGx-5XXwWm9u8sItllyqB4QghMSjfjJp2om-u0BTQTnX0EaCh2iFGnKZOiGJdzNQCQ99xIYlCO6fONRGowHUmx_ytmpqe4W9AoqvdtnrD235_dtHsfG9cKt6R0hWfd4N7qQxfu_tMjZH2FVm599pOT8YVp68y2myyDsu-HRno8zQqObm31_SnD-pLtA7G1xdcyFw8NVWzBKak6Zof4a-b_U0G00"
+            alt="Diagrama UML" class="mt-4 border rounded shadow w-1/2 mx-left">
+    </section>
+
+     <section class="mb-6">
+        <h2 class="text-2xl font-bold mt-8">Diagrama UML Trainer</h2>
+        <img src="https://uml.planttext.com/plantuml/svg/RP112i9034NtXTuX5v3kkn0LZo2uZZEf1AQP8PrnqMrF8Lx7HOzbYWfTT9KVylxdayEGKNFfGrrT55b8ORU7AzsEAK4B8TvPjazEYN1yJ-023ZOablUqZVRHSyVknr8WI1gJCc_Z3_96M2rsd53c5qF0hxMkVfJnvvEnB0DfXWPAyfZ9n9BlCdWMo7YpfQwCNEShvQBoBQyqbf3DkKx-bse1EvwVg0GkIiVQBx9Pcmuathxt0G00"
+            alt="Diagrama UML" class="mt-4 border rounded shadow w-1/2 mx-left">
+    </section>
+
+     <section class="mb-6">
+        <h2 class="text-2xl font-bold mt-8">Diagrama UML Client</h2>
+        <img src="https://uml.planttext.com/plantuml/svg/RP2zRSD034Px0zw12mJgNGJEpmuf0qgY1G8Kxq3UfL3hARn4beWBZnNgOWG9e8x5Uny_ykW5hTHPzhiNOT823u_mHlrJpd00IHChTE0yQSsRo0UD1C8H0p4CWaumikUatBFGfXF8rwVwO1mgGchQzRoTpqj5uOLmkPv_DMEuNHYmJufpAB7dReJx-XmUgvELLMZf_cuqHKl3mabzlOc4XX9T5MgWtZMClFFQhpjo0_UxIFlRnwXKqvysHakLWl-ttsyu09xuTa6BfoGziSthsC7Oy2Ff64__1W00"
+            alt="Diagrama UML" class="mt-4 border rounded shadow w-1/2 mx-left">
+    </section>
+
+</body>
+
+</html>
