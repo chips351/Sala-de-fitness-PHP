@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'connectDB.php';
-require_once 'OperatiiDB.php';
+require_once 'operatiiDB.php';
 
 header('Content-Type: application/json');
 
