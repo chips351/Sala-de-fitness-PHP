@@ -5,15 +5,17 @@ require_once 'operatiiDB.php';
 
 header('Content-Type: application/json');
 
-$data = json_decode(file_get_contents('php://input'), true); // citim datele JSON
+$data = json_decode(file_get_contents('php://input'), true);
 $username = trim($data['username'] ?? '');
 $password = trim($data['password'] ?? '');
 
 $response = ['success' => false];
 
+//validare
 if (!$username || !$password) {
     $response['message'] = 'Trebuie completate username și parola!';
     echo json_encode($response);
+    exit;
 }
 
 try {
@@ -21,30 +23,35 @@ try {
 
     if (!$users) {
         $response['message'] = 'Username inexistent.';
-    } else {
-        $user = $users[0];
-        if (!password_verify($password, $user['password'])) {
-            $response['message'] = 'Parolă incorectă.';
-        } else {
-            // Login reusit, deci salvam in sesiune
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['role'] = $user['role'];
-            $_SESSION['name'] = $user['name'];
-
-            $response['success'] = true;
-            $response['message'] = 'Login reușit.';
-
-            if ($user['role'] === 'trainer') {
-                $response['redirect'] = 'trainerDashboard.php';
-            } else {
-                $response['redirect'] = 'clientDashboard.php';
-            }
-        }
+        echo json_encode($response);
+        exit;
     }
+
+    $user = $users[0];
+
+    if (!password_verify($password, $user['password'])) {
+        $response['message'] = 'Parolă incorectă.';
+        echo json_encode($response);
+        exit;
+    }
+
+    //login reusit
+    $_SESSION['user_id'] = $user['id'];
+    $_SESSION['username'] = $user['username'];
+    $_SESSION['role'] = $user['role'];
+    $_SESSION['name'] = $user['name'];
+
+    $response['success'] = true;
+    $response['message'] = 'Login reușit.';
+    $response['redirect'] = ($user['role'] === 'trainer')
+        ? 'trainerDashboard.php'
+        : 'clientDashboard.php';
+
+    echo json_encode($response);
+    exit;
 
 } catch (PDOException $e) {
     $response['message'] = "Eroare DB: " . $e->getMessage();
+    echo json_encode($response);
+    exit;
 }
-
-echo json_encode($response); //trimite inapoi la frontend
