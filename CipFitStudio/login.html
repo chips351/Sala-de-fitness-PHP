@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <title>Login Client</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
-
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -15,7 +13,7 @@
     </style>
 </head>
 
-<body class="min-h-screen flex justify-center items-center  bg-[url('imagini/dumbells.jpg')] bg-cover bg-center py-20">
+<body class="min-h-screen flex justify-center items-center bg-[url('imagini/dumbells.jpg')] bg-cover bg-center py-20">
     <div class="bg-gradient-to-b from-black/50 to-white/50
             backdrop-blur-sm shadow-xl rounded-3xl 
             p-10 w-[450px] flex flex-col items-center">
@@ -33,38 +31,82 @@
         <!-- Title -->
         <p class="text-2xl font-bold text-black mb-8">Login client</p>
 
-        <!-- Username Input -->
-        <div class="w-full mb-5">
-            <label class="block text-left text-gray-700 font-medium mb-1">Username</label>
-            <input type="text"
-                class="w-full h-12 px-4 bg-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="Introdu username-ul" />
-        </div>
+        <!-- Form start -->
+        <form id="loginForm" action="login.php" method="POST" class="w-full flex flex-col items-center">
 
-        <!-- Password Input -->
-        <div class="w-full mb-2 relative">
-            <label class="block text-left text-gray-700 font-medium mb-1">Password</label>
+            <!-- Username Input -->
+            <div class="w-full mb-5">
+                <label class="block text-left text-gray-700 font-medium mb-1">Username</label>
+                <input type="text" name="username"
+                    class="w-full h-12 px-4 bg-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-red-500"
+                    placeholder="Introdu username-ul" />
+            </div>
 
-            <input type="password"
-                class="w-full h-12 px-4 pr-12 bg-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="Introdu parola" />
+            <!-- Password Input -->
+            <div class="w-full mb-5 relative">
+                <label class="block text-left text-gray-700 font-medium mb-1">Password</label>
+                <input type="password" name="password"
+                    class="w-full h-12 px-4 pr-12 bg-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-red-500"
+                    placeholder="Introdu parola" />
+                <button type="button" class="absolute right-3 top-[42px] w-6 h-6 opacity-90"
+                    onclick="const i=this.parentElement.querySelector('input'); i.type = i.type === 'password' ? 'text' : 'password';">
+                    <img src="imagini/see_password.png" alt="See password" class="w-full h-full object-contain" />
+                </button>
+            </div>
 
-            <button type="button" class="absolute right-3 top-[42px] w-6 h-6 opacity-90"
-                onclick="const i=this.parentElement.querySelector('input'); i.type = i.type === 'password' ? 'text' : 'password';">
-                <img src="imagini/see_password.png" alt="See password" class="w-full h-full object-contain" />
+            <!-- Forgot password -->
+            <a href="#" class="text-sm text-black/80 font-semibold mt-1 mb-6 hover:underline">
+                Forgot password?
+            </a>
+
+            <!-- Submit button -->
+            <button type="submit"
+                class="w-full bg-black text-white text-lg font-bold py-3 rounded-lg hover:scale-105 transition">
+                Login
             </button>
-        </div>
 
-        <a href="#" class="text-sm text-black/80 font-semibold mt-1 mb-6 hover:underline">
-            Forgot password?
-        </a>
+            <div id="message" class="text-red-600 font-medium mt-2"></div>
 
-        <button class="w-full bg-black text-white text-lg font-bold py-3 rounded-lg hover:scale-105 transition">
-            Login
-        </button>
+            <script>
+                const form = document.getElementById('loginForm');
+                const messageDiv = document.getElementById('message');
+                
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault(); // opreste refresh
+                    const formattedFormData = {
+                        username: this.username.value,
+                        password: this.password.value
+                    }
+                    postData(formattedFormData);
+                });
+                
+                async function postData(formattedFormData) {
+                    try {
+                        const response = await fetch('login.php', { //apelam login.php
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(formattedFormData)
+                        });
 
+                        const data = await response.json(); //raspunsul din login.php
+
+                        if (data && data.success) {
+                            window.location.href = data.redirect || 'homepage.html';
+                        } else {
+                            if (data && data.message) {
+                                messageDiv.textContent = data.message;
+                            } else {
+                                messageDiv.textContent = 'Login failed';
+                            }
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        messageDiv.textContent = 'Network error';
+                    }
+                }
+            </script>
+        </form>
     </div>
-
 </body>
 
 </html>
