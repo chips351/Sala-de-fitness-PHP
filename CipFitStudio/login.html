@@ -91,8 +91,13 @@
                         const data = await response.json(); //raspunsul din login.php
 
                         if (data && data.success) {
-                            window.location.href = data.redirect || 'homepage.html';
+                            messageDiv.className = 'text-green-600 font-bold text-lg mt-2';
+                            messageDiv.textContent = 'Login reușit!';
+                            setTimeout(() => {
+                                window.location.href = data.redirect || 'homepage.php';
+                            }, 1500);
                         } else {
+                            messageDiv.className = 'text-red-600 font-medium mt-2';
                             if (data && data.message) {
                                 messageDiv.textContent = data.message;
                             } else {
@@ -101,6 +106,7 @@
                         }
                     } catch (err) {
                         console.error(err);
+                        messageDiv.className = 'text-red-600 font-medium mt-2';
                         messageDiv.textContent = 'Network error';
                     }
                 }

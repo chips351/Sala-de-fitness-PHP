@@ -1,29 +1,43 @@
 <?php
+session_start();
 require_once 'connectDB.php';
 require_once 'operatiiDB.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name']);
-    $username = trim($_POST['username']);
-    $email = trim($_POST['email']);
-    $phone = trim($_POST['phone']);
-    $role = $_POST['role'];
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
+header('Content-Type: application/json; charset=utf-8');
 
-    $errors = [];
+$response = ['success' => false, 'message' => ''];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = trim($_POST['name'] ?? '');
+    $username = trim($_POST['username'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
+    $role = trim($_POST['role'] ?? '');
+    $password = trim($_POST['password'] ?? '');
+    $confirm_password = trim($_POST['confirm_password'] ?? '');
+
+    // validare campuri goale
+    if (!$name || !$username || !$email || !$role || !$password || !$confirm_password) {
+        $response['message'] = 'Toate câmpurile obligatorii trebuie completate!';
+        echo json_encode($response);
+        exit;
+    }
 
     if ($password !== $confirm_password) {
-        $errors[] = "Parolele nu coincid!";
+        $response['message'] = 'Parolele nu coincid!';
+        echo json_encode($response);
+        exit;
     }
 
-    // username unic
-    $existingUser = OperatiiDB::read('users', "WHERE username = '$username'");
-    if ($existingUser) {
-        $errors[] = "Username-ul '$username' există deja!";
+    // Verifică username unic
+    $existingUser = OperatiiDB::read('users', "WHERE username = :username", [':username' => $username]);
+    if ($existingUser && count($existingUser) > 0) {
+        $response['message'] = "Username-ul '$username' există deja!";
+        echo json_encode($response);
+        exit;
     }
 
-    if (empty($errors)) {
+    try {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
         $userId = OperatiiDB::create('users', [
@@ -36,11 +50,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'status' => 'active'
         ]);
 
-        header("Location: login.html");
-        exit;
-    } else {
-        foreach ($errors as $err) {
-            echo "$err<br>";
-        }
+        $response['success'] = true;
+        $response['message'] = 'Cont creat cu succes!';
+        $response['redirect'] = 'login.html';
+
+    } catch (Exception $e) {
+        error_log('Signup error: ' . $e->getMessage());
+        $response['message'] = 'Eroare la creare cont. Încercați din nou.';
     }
 }
+
+echo json_encode($response);
