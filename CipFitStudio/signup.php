@@ -36,7 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'status' => 'active'
         ]);
 
-        echo "Cont creat cu succes! Username: $username";
+        header("Location: login.html");
+        exit;
     } else {
         foreach ($errors as $err) {
             echo "$err<br>";

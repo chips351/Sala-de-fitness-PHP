@@ -97,7 +97,7 @@ $classes = OperatiiDB::read(
             <?php if (empty($classes)): ?>
                 <p class="text-white font-semibold text-center">Nu ai creat nicio clasă încă.</p>
             <?php else: ?>
-                <table class="w-full text-white border-collapse">
+                <table class="w-full text-white border-separate border-spacing-y-4">
                     <thead>
                         <tr>
                             <th class="border-b border-white/50 px-4 py-2 text-left">Titlu</th>
@@ -113,44 +113,37 @@ $classes = OperatiiDB::read(
                     <tbody>
                         <?php foreach ($classes as $cls): ?>
                             <tr class="hover:bg-white/10 transition">
-                                <form method="POST" class="flex flex-row gap-2 items-center">
-                                    <input type="hidden" name="id" value="<?= $cls['id'] ?>">
+                                <td class="align-middle px-2 py-3"><?= htmlspecialchars($cls['title']) ?></td>
 
-                                    <td><input type="text" name="title" value="<?= htmlspecialchars($cls['title']) ?>"
-                                            class="w-full bg-white/30 text-white px-2 rounded focus:outline-none font-semibold"></td>
+                                <td class="align-middle px-2 py-3"><?= htmlspecialchars($cls['description']) ?></td>
 
-                                    <td><input type="text" name="description" value="<?= htmlspecialchars($cls['description']) ?>"
-                                            class="w-full bg-white/30 text-white px-2 rounded focus:outline-none font-semibold"></td>
+                                <td class="align-middle px-2 py-3"><?= htmlspecialchars($cls['DATE']) ?></td>
 
-                                    <td><input type="date" name="date" value="<?= $cls['DATE'] ?>"
-                                            class="bg-white/30 text-white px-2 rounded focus:outline-none font-semibold"></td>
+                                <td class="align-middle px-2 py-3"><?= htmlspecialchars($cls['TIME']) ?></td>
 
-                                    <td><input type="time" name="time" value="<?= $cls['TIME'] ?>"
-                                            class="bg-white/30 text-white px-2 rounded focus:outline-none font-semibold"></td>
+                                <td class="align-middle px-2 py-3"><?= htmlspecialchars($cls['duration']) ?></td>
 
-                                    <td><input type="number" name="duration" value="<?= $cls['duration'] ?>"
-                                            class="w-full bg-white/30 text-white px-2 rounded focus:outline-none font-semibold"></td>
+                                <td class="align-middle px-2 py-3"><?= htmlspecialchars($cls['max_clients']) ?></td>
 
-                                    <td><input type="number" name="max_clients" value="<?= $cls['max_clients'] ?>"
-                                            class="w-full bg-white/30 text-white px-2 rounded focus:outline-none font-semibold"></td>
+                                <td class="align-middle px-2 py-3"><?= htmlspecialchars($cls['location']) ?></td>
 
-                                    <td><input type="text" name="location" value="<?= htmlspecialchars($cls['location']) ?>"
-                                            class="w-full bg-white/30 text-white px-2 rounded focus:outline-none font-semibold"></td>
+                                <td class="px-2 py-3">
+                                    <div class="flex flex-row gap-2 justify-start">
+                                        <a href="editClass.php?id=<?= $cls['id'] ?>"
+                                            class="bg-red-600 px-3 py-1 rounded hover:scale-105 transition font-extrabold text-white inline-block">
+                                            Editează
+                                        </a>
 
-                                    <td class="flex flex-row gap-2 ml-2">
-                                        <button type="submit"
-                                            class="bg-red-600 px-3 py-1 rounded hover:scale-105 transition font-extrabold">
-                                            Salvează
-                                        </button>
-
-                                        <!-- DELETE direct aici -->
-                                        <button type="submit" name="delete_id" value="<?= $cls['id'] ?>"
-                                            onclick="return confirm('Sigur vrei să ștergi această clasă?');"
-                                            class="bg-gray-600 px-3 py-1 rounded hover:scale-105 transition font-extrabold">
-                                            Șterge
-                                        </button>
-                                    </td>
-                                </form>
+                                        <form method="POST" class="m-0">
+                                            <input type="hidden" name="delete_id" value="<?= $cls['id'] ?>">
+                                            <button type="submit"
+                                                onclick="return confirm('Sigur vrei să ștergi această clasă?');"
+                                                class="bg-gray-600 px-3 py-1 rounded hover:scale-105 transition font-extrabold text-white">
+                                                Șterge
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

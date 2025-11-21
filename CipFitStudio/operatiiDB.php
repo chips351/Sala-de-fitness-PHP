@@ -35,23 +35,15 @@ class OperatiiDB {
     // UPDATE
     public static function update($tabel, $valori, $conditie, $condParams = []) {
         $conn = Database::getInstance()->getConnection();
-
-        $setPart = [];
-        foreach ($valori as $coloana => $valoare) {
-            $setPart[] = "$coloana = :set_$coloana";
+        $coloane = array_keys($valori);
+        for ($i = 0; $i < count($coloane); $i++) {
+            $coloane[$i] = $coloane[$i] . "=:" . $coloane[$i];
         }
-        $setPart = implode(", ", $setPart);
-
-        // Convertim :set_nume în array
-        $updateParams = [];
-        foreach ($valori as $coloana => $valoare) {
-            $updateParams["set_$coloana"] = $valoare;
-        }
+        $setPart = implode(", ", $coloane);
 
         $sql = "UPDATE $tabel SET $setPart WHERE $conditie";
-
         $stmt = $conn->prepare($sql);
-        $stmt->execute(array_merge($updateParams, $condParams));
+        $stmt->execute(array_merge($valori, $condParams));
     }
 
     // DELETE
