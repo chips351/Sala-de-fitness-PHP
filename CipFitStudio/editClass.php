@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
             <div>
                 <label class="text-white font-bold">Titlu:</label>
                 <input type="text" name="title" value="<?= htmlspecialchars($cls['title']) ?>"
-                       class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold">
+                       class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold" required>
             </div>
 
             <div>
@@ -123,13 +123,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
                 <div>
                     <label class="text-white font-bold">Data:</label>
                     <input type="date" name="date" value="<?= $cls['DATE'] ?>"
-                           class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold">
+                           class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold" required>
                 </div>
 
                 <div>
                     <label class="text-white font-bold">Ora:</label>
                     <input type="time" name="time" value="<?= $cls['TIME'] ?>"
-                           class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold">
+                           class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold" required>
                 </div>
 
                 <div>
@@ -149,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
             <div>
                 <label class="text-white font-bold">Locație:</label>
                 <input type="text" name="location" value="<?= htmlspecialchars($cls['location']) ?>"
-                       class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold">
+                       class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold" required>
             </div>
 
             <div class="flex justify-between pt-6">

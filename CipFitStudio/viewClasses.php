@@ -113,19 +113,19 @@ $classes = OperatiiDB::read(
                     <tbody>
                         <?php foreach ($classes as $cls): ?>
                             <tr class="hover:bg-white/10 transition">
-                                <td class="align-middle px-2 py-3"><?= htmlspecialchars($cls['title']) ?></td>
+                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls['title']) ?></td>
 
-                                <td class="align-middle px-2 py-3"><?= htmlspecialchars($cls['description']) ?></td>
+                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls['description']) ?></td>
 
-                                <td class="align-middle px-2 py-3"><?= htmlspecialchars($cls['DATE']) ?></td>
+                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls['DATE']) ?></td>
+                            
+                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls['TIME']) ?></td>
 
-                                <td class="align-middle px-2 py-3"><?= htmlspecialchars($cls['TIME']) ?></td>
+                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls['duration']) ?></td>
 
-                                <td class="align-middle px-2 py-3"><?= htmlspecialchars($cls['duration']) ?></td>
+                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls['max_clients']) ?></td>
 
-                                <td class="align-middle px-2 py-3"><?= htmlspecialchars($cls['max_clients']) ?></td>
-
-                                <td class="align-middle px-2 py-3"><?= htmlspecialchars($cls['location']) ?></td>
+                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls['location']) ?></td>
 
                                 <td class="px-2 py-3">
                                     <div class="flex flex-row gap-2 justify-start">

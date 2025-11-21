@@ -123,7 +123,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     class="w-full h-12 px-4 bg-white/30 text-white placeholder-white
                            rounded-xl shadow font-semibold">
 
-                <input type="text" name="location" placeholder="Locație"
+                <input type="text" name="location" placeholder="Locație" required
                     class="w-full h-12 px-4 bg-white/30 text-white placeholder-white
                            rounded-xl shadow font-semibold">
 
