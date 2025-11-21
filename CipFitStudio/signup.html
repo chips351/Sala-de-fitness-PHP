@@ -120,47 +120,51 @@
             <script>
                 const form = document.getElementById('signupForm');
                 const messageDiv = document.getElementById('message');
-
-                form.addEventListener('submit', async function (e) {
-                    e.preventDefault();
-
-                    const fd = new FormData(form);
-
+                
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault(); // opreste refresh
+                    const formattedFormData = {
+                        name: this.name.value,
+                        username: this.username.value,
+                        email: this.email.value,
+                        phone: this.phone.value,
+                        role: this.role.value,
+                        password: this.password.value,
+                        confirm_password: this.confirm_password.value
+                    }
+                    postData(formattedFormData);
+                });
+                
+                async function postData(formattedFormData) {
                     try {
-                        const res = await fetch('signup.php', {
+                        const response = await fetch('signup.php', { //apelam signup.php
                             method: 'POST',
-                            body: fd
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(formattedFormData)
                         });
 
-                        let data;
-                        try { data = await res.json(); } catch (e) { data = null; }
+                        const data = await response.json(); //raspunsul din signup.php
 
                         if (data && data.success) {
-                            messageDiv.textContent = '';
-                            messageDiv.classList.remove('text-red-600');
-                            messageDiv.classList.add('text-green-600');
-                            messageDiv.textContent = data.message || 'Cont creat!';
+                            messageDiv.className = 'text-green-600 font-bold text-lg mt-2';
+                            messageDiv.textContent = 'Cont creat cu succes!';
                             setTimeout(() => {
                                 window.location.href = data.redirect || 'login.html';
                             }, 1500);
-                        } else if (data && !data.success) {
-                            messageDiv.classList.remove('text-green-600');
-                            messageDiv.classList.add('text-red-600');
-                            messageDiv.textContent = data.message || 'Eroare la creare cont.';
                         } else {
-                            const text = await res.text();
-                            messageDiv.classList.remove('text-green-600');
-                            messageDiv.classList.add('text-red-600');
-                            messageDiv.textContent = 'A apărut o eroare. Detaliu: ' + text.slice(0, 200);
+                            messageDiv.className = 'text-red-600 font-medium mt-2';
+                            if (data && data.message) {
+                                messageDiv.textContent = data.message;
+                            } else {
+                                messageDiv.textContent = 'Signup failed';
+                            }
                         }
-
                     } catch (err) {
                         console.error(err);
-                        messageDiv.classList.remove('text-green-600');
-                        messageDiv.classList.add('text-red-600');
-                        messageDiv.textContent = 'A apărut o eroare de rețea. Încearcă din nou.';
+                        messageDiv.className = 'text-red-600 font-medium mt-2';
+                        messageDiv.textContent = 'Network error';
                     }
-                });
+                }
             </script>
         </form>
     </div>
