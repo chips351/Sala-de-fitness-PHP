@@ -70,12 +70,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <body class="min-h-screen relative py-20">
 
-    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+    <div class="absolute inset-0 backdrop-blur-sm"></div>
 
     <div class="absolute top-0 left-0 w-full flex justify-between items-center px-10 py-6 z-10">
 
         <a href="trainerDashboard.php"
-            class="text-white text-2xl font-extrabold drop-shadow-[0_0_5px_black] hover:scale-110 transition flex items-center gap-2 cursor-pointer">
+            class="text-white text-xl font-extrabold drop-shadow-[0_0_5px_black] hover:scale-110 transition flex items-center gap-2 cursor-pointer ">
 
             <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 1000" fill="currentColor">
                 <g>
@@ -86,7 +86,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             Înapoi la Dashboard
         </a>
 
-        <div></div>
     </div>
 
     <!-- Main content -->
