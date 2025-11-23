@@ -1,7 +1,6 @@
 <?php
 session_start();
-require_once 'connectDB.php';
-require_once 'operatiiDB.php';
+require_once '../models/FitnessClass.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== "trainer") {
     die("Acces interzis.");
@@ -9,58 +8,45 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== "trainer") {
 
 $trainer_id = $_SESSION['user_id'];
 
-// trebuie să existe id în URL
+// trebuie sa existe id in URL
 if (!isset($_GET['id'])) {
     die("Clasă invalidă.");
 }
 
 $class_id = $_GET['id'];
 
-// citim clasa selectată
-$cls = OperatiiDB::read(
-    'classes',
-    'WHERE id = :id AND trainer_id = :trainer_id',
-    [':id' => $class_id, ':trainer_id' => $trainer_id]
-);
+// citim clasa selectata
+$fitnessClass = FitnessClass::findById($class_id, $trainer_id);
 
-if (empty($cls)) {
+if (!$fitnessClass) {
     die("Clasă inexistentă sau inaccesibilă.");
 }
 
-$cls = $cls[0];
+$errorMessage = '';
 
 // PROCESARE UPDATE
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
-    OperatiiDB::update(
-        'classes',
-        [
-            'title'       => $_POST['title'],
-            'description' => $_POST['description'],
-            'date'        => $_POST['date'],
-            'time'        => $_POST['time'],
-            'duration'    => $_POST['duration'],
-            'max_clients' => $_POST['max_clients'],
-            'location'    => $_POST['location']
-        ],
-        'id = :id AND trainer_id = :trainer_id',
-        [':id' => $class_id, ':trainer_id' => $trainer_id]
-    );
+    try {
+        $fitnessClass->setTitle($_POST['title'] ?? '');
+        $fitnessClass->setDescription($_POST['description'] ?? '');
+        $fitnessClass->setDate($_POST['date'] ?? '');
+        $fitnessClass->setTime($_POST['time'] ?? '');
+        $fitnessClass->setDuration($_POST['duration'] ?? 0);
+        $fitnessClass->setMaxClients($_POST['max_clients'] ?? 0);
+        $fitnessClass->setLocation($_POST['location'] ?? '');
 
-    // recitim clasa actualizată
-    $cls = OperatiiDB::read(
-        'classes',
-        'WHERE id = :id',
-        [':id' => $class_id]
-    )[0];
+        $fitnessClass->update();
+        
+        // Reincarca clasa actualizata
+        $fitnessClass = FitnessClass::findById($class_id, $trainer_id);
+    } catch (Exception $e) {
+        $errorMessage = $e->getMessage();
+    }
 }
 
 // PROCESARE DELETE
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
-    OperatiiDB::delete(
-        'classes',
-        'id = :id AND trainer_id = :trainer_id',
-        [':id' => $class_id, ':trainer_id' => $trainer_id]
-    );
+    $fitnessClass->delete();
     header("Location: viewClasses.php");
     exit();
 }
@@ -75,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
     <style>
         body {
-            background-image: url('imagini/dashboardBG.jpg');
+            background-image: url('../imagini/dashboardBG.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -100,47 +86,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
     </div>
 
     <div class="relative z-10 flex flex-col items-center min-h-screen pt-32 px-4">
-        <h2 class="text-3xl font-extrabold text-white mb-8 drop-shadow-[0_0_5px_black]">
-            Editare Clasă: <?= htmlspecialchars($cls['title']) ?>
+        <h2 class="text-2xl font-extrabold text-white mb-6 drop-shadow-[0_0_5px_black] text-center">
+            Editare Clasă: <?= htmlspecialchars($fitnessClass->getTitle()) ?>
         </h2>
+
+        <?php if (!empty($errorMessage)): ?>
+            <div class="bg-red-500/80 text-white px-4 py-3 rounded-xl mb-4 font-semibold text-center">
+                <?= htmlspecialchars($errorMessage) ?>
+            </div>
+        <?php endif; ?>
 
         <form method="POST" class="bg-white/20 backdrop-blur-lg p-8 rounded-2xl shadow-xl w-full max-w-3xl border border-white/30 space-y-6">
 
             <div>
                 <label class="text-white font-bold">Titlu:</label>
-                <input type="text" name="title" value="<?= htmlspecialchars($cls['title']) ?>"
+                <input type="text" name="title" value="<?= htmlspecialchars($fitnessClass->getTitle()) ?>"
                        class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold" required>
             </div>
 
             <div>
                 <label class="text-white font-bold">Descriere:</label>
                 <textarea name="description" rows="4"
-                          class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold"><?= htmlspecialchars($cls['description']) ?></textarea>
+                          class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold"><?= htmlspecialchars($fitnessClass->getDescription()) ?></textarea>
             </div>
 
             <div class="grid grid-cols-2 gap-6">
 
                 <div>
                     <label class="text-white font-bold">Data:</label>
-                    <input type="date" name="date" value="<?= $cls['DATE'] ?>"
+                    <input type="date" name="date" value="<?= $fitnessClass->getDate() ?>"
                            class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold" required>
                 </div>
 
                 <div>
                     <label class="text-white font-bold">Ora:</label>
-                    <input type="time" name="time" value="<?= $cls['TIME'] ?>"
+                    <input type="time" name="time" value="<?= $fitnessClass->getTime() ?>"
                            class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold" required>
                 </div>
 
                 <div>
                     <label class="text-white font-bold">Durată (minute):</label>
-                    <input type="number" name="duration" value="<?= $cls['duration'] ?>"
+                    <input type="number" name="duration" value="<?= $fitnessClass->getDuration() ?>"
                            class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold">
                 </div>
 
                 <div>
                     <label class="text-white font-bold">Max clienți:</label>
-                    <input type="number" name="max_clients" value="<?= $cls['max_clients'] ?>"
+                    <input type="number" name="max_clients" value="<?= $fitnessClass->getMaxClients() ?>"
                            class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold">
                 </div>
 
@@ -148,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
 
             <div>
                 <label class="text-white font-bold">Locație:</label>
-                <input type="text" name="location" value="<?= htmlspecialchars($cls['location']) ?>"
+                <input type="text" name="location" value="<?= htmlspecialchars($fitnessClass->getLocation()) ?>"
                        class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold" required>
             </div>
 

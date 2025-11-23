@@ -1,7 +1,6 @@
 <?php
 session_start();
-require_once 'connectDB.php';
-require_once 'operatiiDB.php';
+require_once '../models/FitnessClass.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== "trainer") {
     die("Acces interzis.");
@@ -9,40 +8,16 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== "trainer") {
 
 $trainer_id = $_SESSION['user_id'];
 
-// Procesare editare clasa
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['id'])) {
-    $id = $_POST['id'];
-
-    OperatiiDB::update(
-        'classes',
-        [
-            'title'       => $_POST['title'],
-            'description' => $_POST['description'],
-            'date'        => $_POST['date'],
-            'time'        => $_POST['time'],
-            'duration'    => $_POST['duration'],
-            'max_clients' => $_POST['max_clients'],
-            'location'    => $_POST['location']
-        ],
-        'id = :id AND trainer_id = :trainer_id',
-        [':id' => $id, ':trainer_id' => $trainer_id]
-    );
-}
-
 //pt delete
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
-    OperatiiDB::delete('classes', 'id = :id AND trainer_id = :trainer_id', [
-        ':id' => $_POST['delete_id'],
-        ':trainer_id' => $trainer_id
-    ]);
+    $fitnessClass = FitnessClass::findById($_POST['delete_id'], $trainer_id);
+    if ($fitnessClass) {
+        $fitnessClass->delete();
+    }
 }
 
-//pt read
-$classes = OperatiiDB::read(
-    'classes',
-    'WHERE trainer_id = :trainer_id ORDER BY date, time',
-    [':trainer_id' => $trainer_id]
-);
+//pt read - folosim metoda findByTrainer
+$classes = FitnessClass::findByTrainer($trainer_id);
 ?>
 
 <!DOCTYPE html>
@@ -55,7 +30,7 @@ $classes = OperatiiDB::read(
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
     <style>
         body {
-            background-image: url('imagini/dashboardBG.jpg');
+            background-image: url('../imagini/dashboardBG.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -113,29 +88,29 @@ $classes = OperatiiDB::read(
                     <tbody>
                         <?php foreach ($classes as $cls): ?>
                             <tr class="hover:bg-white/10 transition">
-                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls['title']) ?></td>
+                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls->getTitle()) ?></td>
 
-                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls['description']) ?></td>
+                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls->getDescription()) ?></td>
 
-                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls['DATE']) ?></td>
+                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls->getDate()) ?></td>
                             
-                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls['TIME']) ?></td>
+                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls->getTime()) ?></td>
 
-                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls['duration']) ?></td>
+                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls->getDuration()) ?></td>
 
-                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls['max_clients']) ?></td>
+                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls->getMaxClients()) ?></td>
 
-                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls['location']) ?></td>
+                                <td class="align-middle text-center px-2 py-3"><?= htmlspecialchars($cls->getLocation()) ?></td>
 
                                 <td class="px-2 py-3">
                                     <div class="flex flex-row gap-2 justify-start">
-                                        <a href="editClass.php?id=<?= $cls['id'] ?>"
+                                        <a href="editClass.php?id=<?= $cls->getId() ?>"
                                             class="bg-red-600 px-3 py-1 rounded hover:scale-105 transition font-extrabold text-white inline-block">
                                             Editează
                                         </a>
 
                                         <form method="POST" class="m-0">
-                                            <input type="hidden" name="delete_id" value="<?= $cls['id'] ?>">
+                                            <input type="hidden" name="delete_id" value="<?= $cls->getId() ?>">
                                             <button type="submit"
                                                 onclick="return confirm('Sigur vrei să ștergi această clasă?');"
                                                 class="bg-gray-600 px-3 py-1 rounded hover:scale-105 transition font-extrabold text-white">

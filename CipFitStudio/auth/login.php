@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once 'connectDB.php';
-require_once 'operatiiDB.php';
+require_once '../config/connectDB.php';
+require_once '../config/operatiiDB.php';
 
 header('Content-Type: application/json');
 
@@ -44,8 +44,8 @@ try {
     $response['success'] = true;
     $response['message'] = 'Login reușit.';
     $response['redirect'] = ($user['role'] === 'trainer')
-        ? 'trainerDashboard.php'
-        : 'clientDashboard.php';
+        ? '../trainer/trainerDashboard.php'
+        : '../client/clientDashboard.php';
 
     echo json_encode($response);
     exit;

@@ -3,7 +3,7 @@ session_start();
 
 // Daca nu e logat ca trainer, n are acces
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'trainer') {
-    header("Location: login.html");
+    header("Location: ../auth/login.html");
     exit;
 }
 ?>
@@ -26,15 +26,15 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'trainer') {
 </head>
 
 <body class="min-h-screen flex justify-center items-center 
-             bg-[url('imagini/dashboardBG.jpg')] bg-cover bg-center py-20">
+             bg-[url('../imagini/dashboardBG.jpg')] bg-cover bg-center py-20">
 
     <div class="bg-white/45
                 backdrop-blur-sm shadow-xl rounded-3xl 
                 p-10 w-[500px] flex flex-col items-center">
 
         <!-- Logo -->
-        <a href="homepage.php" class="flex items-center gap-6 mb-10 no-underline cursor-pointer hover:opacity-90">
-            <img src="imagini/logo.png" alt="CipFit logo" class="h-20 w-auto object-contain drop-shadow-lg" />
+        <a href="../homepage.php" class="flex items-center gap-6 mb-10 no-underline cursor-pointer hover:opacity-90">
+            <img src="../imagini/logo.png" alt="CipFit logo" class="h-20 w-auto object-contain drop-shadow-lg" />
             <div class="w-[1.3px] h-16 bg-black drop-shadow-lg"></div>
             <div class="text-left drop-shadow-lg">
                 <p class="text-4xl font-extrabold text-black drop-shadow-lg">CipFit</p>
@@ -60,7 +60,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'trainer') {
             Vezi clasele tale
         </a>
 
-        <a href="logout.php"
+        <a href="../auth/logout.php"
             class="w-full bg-[#D10000] text-white text-lg font-bold py-3 rounded-lg mt-6
                    hover: hover:scale-105 transition text-center">
             Logout

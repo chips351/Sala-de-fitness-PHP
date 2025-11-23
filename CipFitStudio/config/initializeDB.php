@@ -5,7 +5,7 @@ try {
     $pdo = Database::getInstance()->getConnection();
     echo "Connection successful!<br>";
 
-    // SQL pentru creearea bazei de date și a tabelelor
+    //creare baza de date si tabele
     $sql = "
 
     CREATE DATABASE IF NOT EXISTS fitness_db;

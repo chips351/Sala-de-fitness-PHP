@@ -60,7 +60,7 @@ session_start();
             <?php if (isset($_SESSION['user_id'])): ?>
                 <!-- Vezi Clasele -->
                 <?php
-                $linkClasa = ($_SESSION['role'] === 'trainer') ? 'trainerDashboard.php' : 'clientDashboard.php';
+                $linkClasa = ($_SESSION['role'] === 'trainer') ? 'trainer/trainerDashboard.php' : 'client/clientDashboard.php';
                 ?>
                 <a href="<?= $linkClasa ?>"
                     class="text-white bg-gray-600 px-5 py-2 rounded-md text-sm font-medium transform transition-all duration-200 hover:scale-110 text-center">
@@ -84,7 +84,7 @@ session_start();
                     <!-- dropdown -->
                     <div id="userDropdown"
                         class="hidden absolute right-0 mt-2 bg-[#D10000] text-white rounded-md shadow-lg w-full z-20">
-                        <a href="logout.php"
+                        <a href="auth/logout.php"
                             class="block px-5 py-2 rounded-md text-sm font-medium hover:bg-[#B80000] transition text-center">
                             Logout
                         </a>
@@ -95,11 +95,11 @@ session_start();
 
     <?php else: ?>
         <!-- Login / Signup -->
-        <a href="login.html"
+        <a href="auth/login.html"
             class="text-white bg-gray-600 px-5 py-2 rounded-md text-sm font-medium transform transition-all duration-200 hover:scale-110 text-center">
             Login
         </a>
-        <a href="signup.html"
+        <a href="auth/signup.html"
             class="text-white bg-[#D10000] px-5 py-2 rounded-md text-sm font-medium transform transition-all duration-200 hover:scale-110 text-center">
             Signup
         </a>
@@ -108,10 +108,15 @@ session_start();
     </div>
 
     <!-- Center text -->
-    <div class="flex justify-center items-center mt-32">
+    <div class="flex flex-col justify-center items-center mt-32 gap-6">
         <h1 class="text-red-600 text-2xl md:text-4xl font-extrabold drop-shadow-[0_0_3px_black]">
             Become the best version of yourself.
         </h1>
+        
+        <a href="auth/signup.html"
+            class="text-white bg-red-600 px-8 py-3 rounded-md text-lg font-medium transform transition-all duration-200 hover:scale-110 hover:bg-[#B80000] text-center drop-shadow-[0_0_3px_black] opacity-95">
+            Get started
+        </a>
     </div>
 
 </body>

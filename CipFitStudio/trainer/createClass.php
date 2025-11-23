@@ -1,48 +1,33 @@
 <?php
 session_start();
-require_once "connectDB.php";
+require_once "../models/FitnessClass.php";
 
-// Check trainer session
+//check trainer session
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== "trainer") {
     die("Acces interzis.");
 }
 
-$db = Database::getInstance();
-$conn = $db->getConnection();
+$errorMessage = '';
 
-// Procesare formular
+//procesare formular
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-    $trainer_id   = $_SESSION["user_id"];
-    $title        = $_POST["title"];
-    $description  = $_POST["description"];
-    $date         = $_POST["date"];
-    $time         = $_POST["time"];
-    $duration     = $_POST["duration"];
-    $max_clients  = $_POST["max_clients"];
-    $location     = $_POST["location"];
-
     try {
-        $sql = "INSERT INTO classes 
-                (trainer_id, title, description, date, time, duration, max_clients, location)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([
-            $trainer_id,
-            $title,
-            $description,
-            $date,
-            $time,
-            $duration,
-            $max_clients,
-            $location
+        $fitnessClass = new FitnessClass([
+            'trainer_id' => $_SESSION["user_id"],
+            'title' => $_POST["title"] ?? '',
+            'description' => $_POST["description"] ?? '',
+            'DATE' => $_POST["date"] ?? '',
+            'TIME' => $_POST["time"] ?? '',
+            'duration' => $_POST["duration"] ?? 0,
+            'max_clients' => $_POST["max_clients"] ?? 0,
+            'location' => $_POST["location"] ?? ''
         ]);
 
+        $fitnessClass->create();
         header("Location: trainerDashboard.php?created=1");
         exit;
-    } catch (PDOException $e) {
-        die("Eroare DB: " . $e->getMessage());
+    } catch (Exception $e) {
+        $errorMessage = $e->getMessage();
     }
 }
 ?>
@@ -59,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     <style>
         body {
-            background-image: url('imagini/dashboardBG.jpg');
+            background-image: url('../imagini/dashboardBG.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -98,6 +83,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <h2 class="text-3xl font-extrabold text-white text-center mb-10 drop-shadow-[0_0_5px_black]">
                 Creează o nouă clasă
             </h2>
+
+            <?php if (!empty($errorMessage)): ?>
+                <div class="bg-red-500/80 text-white px-4 py-3 rounded-xl mb-4 font-semibold">
+                    <?= htmlspecialchars($errorMessage) ?>
+                </div>
+            <?php endif; ?>
 
             <form method="POST" class="flex flex-col gap-5">
 

@@ -11,7 +11,7 @@ class OperatiiDB {
         $stmt = $conn->prepare($sql);
         $stmt->execute($params);
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC); // <- IMPORTANT!
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // INSERT
@@ -33,7 +33,7 @@ class OperatiiDB {
     }
 
     // UPDATE
-    public static function update($tabel, $valori, $conditie, $condParams = []) {
+    public static function update($tabel, $valori, $conditie, $condParams = []) { //folosesc cond params pt prepared statement, nu pun valorile direct in conditie, ci folosesc placeholderi
         $conn = Database::getInstance()->getConnection();
         $coloane = array_keys($valori);
         for ($i = 0; $i < count($coloane); $i++) {
@@ -43,7 +43,7 @@ class OperatiiDB {
 
         $sql = "UPDATE $tabel SET $setPart WHERE $conditie";
         $stmt = $conn->prepare($sql);
-        $stmt->execute(array_merge($valori, $condParams));
+        $stmt->execute(array_merge($valori, $condParams)); //execute accepta un singur array
     }
 
     // DELETE
