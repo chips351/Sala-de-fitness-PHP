@@ -17,8 +17,8 @@ class FitnessClass {
         $this->trainerId = $data['trainer_id'] ?? null;
         $this->title = $data['title'] ?? '';
         $this->description = $data['description'] ?? '';
-        $this->date = $data['DATE'] ?? '';
-        $this->time = $data['TIME'] ?? '';
+        $this->date = $data['DATE'] ?? $data['date'] ?? '';
+        $this->time = $data['TIME'] ?? $data['time'] ?? '';
         $this->duration = $data['duration'] ?? 0;
         $this->maxClients = $data['max_clients'] ?? 0;
         $this->location = $data['location'] ?? '';
