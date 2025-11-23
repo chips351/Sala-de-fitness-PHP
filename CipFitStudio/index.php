@@ -48,7 +48,7 @@ session_start();
         <!-- Brand left -->
         <div class="flex items-center gap-6">
             <div class="flex items-center gap-4">
-                <div class="text-left cursor-pointer" onclick="window.location.href='homepage.php'">
+                <div class="text-left cursor-pointer" onclick="window.location.href='index.php'">
                     <p class="text-4xl font-extrabold text-black drop-shadow">CipFit</p>
                     <p class="text-xl font-semibold text-black drop-shadow">Studio</p>
                 </div>

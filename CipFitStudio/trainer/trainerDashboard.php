@@ -33,7 +33,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'trainer') {
                 p-10 w-[500px] flex flex-col items-center">
 
         <!-- Logo -->
-        <a href="../homepage.php" class="flex items-center gap-6 mb-10 no-underline cursor-pointer hover:opacity-90">
+        <a href="../index.php" class="flex items-center gap-6 mb-10 no-underline cursor-pointer hover:opacity-90">
             <img src="../imagini/logo.png" alt="CipFit logo" class="h-20 w-auto object-contain drop-shadow-lg" />
             <div class="w-[1.3px] h-16 bg-black drop-shadow-lg"></div>
             <div class="text-left drop-shadow-lg">
