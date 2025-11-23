@@ -1,5 +1,5 @@
 <?php
-require_once '../config/operatiiDB.php';
+require_once '../app_config/operatiiDB.php';
 
 class FitnessClass {
     private $id;

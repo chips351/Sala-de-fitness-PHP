@@ -8,9 +8,6 @@ try {
     //creare baza de date si tabele
     $sql = "
 
-    CREATE DATABASE IF NOT EXISTS fitness_db;
-    USE fitness_db;
-
     CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
