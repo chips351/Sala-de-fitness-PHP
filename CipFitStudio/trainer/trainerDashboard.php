@@ -26,7 +26,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'trainer') {
 </head>
 
 <body class="min-h-screen flex justify-center items-center 
-             bg-[url('../imagini/dashboardBG.jpg')] bg-cover bg-center py-20">
+             bg-[url('../imagini/dashboardBG.webp')] bg-cover bg-center py-20">
 
     <div class="bg-white/45
                 backdrop-blur-sm shadow-xl rounded-3xl 
@@ -34,7 +34,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'trainer') {
 
         <!-- Logo -->
         <a href="../index.php" class="flex items-center gap-6 mb-10 no-underline cursor-pointer hover:opacity-90">
-            <img src="../imagini/logo.png" alt="CipFit logo" class="h-20 w-auto object-contain drop-shadow-lg" />
+            <img src="../imagini/logo.webp" alt="CipFit logo" class="h-20 w-auto object-contain drop-shadow-lg" />
             <div class="w-[1.3px] h-16 bg-black drop-shadow-lg"></div>
             <div class="text-left drop-shadow-lg">
                 <p class="text-4xl font-extrabold text-black drop-shadow-lg">CipFit</p>

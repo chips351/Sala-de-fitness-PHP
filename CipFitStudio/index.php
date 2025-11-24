@@ -12,7 +12,7 @@ session_start();
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
     <style>
         body {
-            background-image: url('imagini/background_img.jpg');
+            background-image: url('imagini/background_img.webp');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;

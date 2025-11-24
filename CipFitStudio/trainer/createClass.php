@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     <style>
         body {
-            background-image: url('../imagini/dashboardBG.jpg');
+            background-image: url('../imagini/dashboardBG.webp');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;

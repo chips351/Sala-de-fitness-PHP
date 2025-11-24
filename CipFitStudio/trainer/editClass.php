@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
     <style>
         body {
-            background-image: url('../imagini/dashboardBG.jpg');
+            background-image: url('../imagini/dashboardBG.webp');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;

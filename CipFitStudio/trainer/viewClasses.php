@@ -33,7 +33,7 @@ $classes = FitnessClass::findByTrainer($trainer_id);
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
     <style>
         body {
-            background-image: url('../imagini/dashboardBG.jpg');
+            background-image: url('../imagini/dashboardBG.webp');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
