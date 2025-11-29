@@ -47,7 +47,7 @@ class FitnessClass {
     public function create() {
         $errors = $this->validate();
         if (!empty($errors)) {
-            throw new Exception(implode(" ", $errors)); //concateneaza toate erorile
+            throw new Exception($errors[0]); // Doar prima eroare
         }
 
         $id = OperatiiDB::create('classes', [
@@ -68,7 +68,7 @@ class FitnessClass {
     public function update() {
         $errors = $this->validate();
         if (!empty($errors)) {
-            throw new Exception(implode(" ", $errors));
+            throw new Exception($errors[0]); // Doar prima eroare
         }
 
         OperatiiDB::update('classes', 
