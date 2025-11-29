@@ -47,7 +47,7 @@ class FitnessClass {
     public function create() {
         $errors = $this->validate();
         if (!empty($errors)) {
-            throw new Exception(implode(" ", $errors));
+            throw new Exception(implode(" ", $errors)); //concateneaza toate erorile
         }
 
         $id = OperatiiDB::create('classes', [
@@ -162,12 +162,12 @@ class FitnessClass {
             $errors[] = "Locația este obligatorie.";
         }
 
-        if ($this->duration <= 0) {
-            $errors[] = "Durata trebuie să fie pozitivă.";
+        if (!is_numeric($this->duration) || $this->duration <= 0) {
+            $errors[] = "Durata trebuie să fie un număr pozitiv.";
         }
 
-        if ($this->maxClients <= 0) {
-            $errors[] = "Numărul maxim de clienți trebuie să fie pozitiv.";
+        if (!is_numeric($this->maxClients) || $this->maxClients <= 0) {
+            $errors[] = "Numărul maxim de clienți trebuie să fie un număr pozitiv.";
         }
 
         return $errors;

@@ -24,31 +24,46 @@ if (!$fitnessClass) {
 
 $errorMessage = '';
 
-// PROCESARE UPDATE
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
-    try {
-        $fitnessClass->setTitle($_POST['title'] ?? '');
-        $fitnessClass->setDescription($_POST['description'] ?? '');
-        $fitnessClass->setDate($_POST['date'] ?? '');
-        $fitnessClass->setTime($_POST['time'] ?? '');
-        $fitnessClass->setDuration($_POST['duration'] ?? 0);
-        $fitnessClass->setMaxClients($_POST['max_clients'] ?? 0);
-        $fitnessClass->setLocation($_POST['location'] ?? '');
-
-        $fitnessClass->update();
-        
-        // Reincarca clasa actualizata
-        $fitnessClass = FitnessClass::findById($class_id, $trainer_id);
-    } catch (Exception $e) {
-        $errorMessage = $e->getMessage();
+// PROCESARE POST (UPDATE sau DELETE)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json; charset=utf-8');
+    $response = ['success' => false, 'message' => ''];
+    
+    // DELETE
+    if (isset($_POST['delete'])) {
+        try {
+            $fitnessClass->delete();
+            
+            $response['success'] = true;
+            $response['message'] = 'Clasa a fost ștearsă cu succes!';
+            $response['redirect'] = 'viewClasses.php';
+        } catch (Exception $e) {
+            $response['message'] = $e->getMessage();
+        }
     }
-}
+    // UPDATE (default)
+    else {
+        try {
+            $fitnessClass->setTitle($_POST['title'] ?? '');
+            $fitnessClass->setDescription($_POST['description'] ?? '');
+            $fitnessClass->setDate($_POST['date'] ?? '');
+            $fitnessClass->setTime($_POST['time'] ?? '');
+            $fitnessClass->setDuration($_POST['duration'] ?? 0);
+            $fitnessClass->setMaxClients($_POST['max_clients'] ?? 0);
+            $fitnessClass->setLocation($_POST['location'] ?? '');
 
-// PROCESARE DELETE
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
-    $fitnessClass->delete();
-    header("Location: viewClasses.php");
-    exit();
+            $fitnessClass->update();
+            
+            $response['success'] = true;
+            $response['message'] = 'Clasa a fost actualizată cu succes!';
+            $response['redirect'] = 'viewClasses.php';
+        } catch (Exception $e) {
+            $response['message'] = $e->getMessage();
+        }
+    }
+    
+    echo json_encode($response);
+    exit;
 }
 ?>
 
@@ -90,18 +105,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
             Editare Clasă: <?= htmlspecialchars($fitnessClass->getTitle()) ?>
         </h2>
 
-        <?php if (!empty($errorMessage)): ?>
-            <div class="bg-red-500/80 text-white px-4 py-3 rounded-xl mb-4 font-semibold text-center">
-                <?= htmlspecialchars($errorMessage) ?>
-            </div>
-        <?php endif; ?>
-
-        <form method="POST" class="bg-white/20 backdrop-blur-lg p-8 rounded-2xl shadow-xl w-full max-w-3xl border border-white/30 space-y-6">
+        <form id="editClassForm" method="POST" class="bg-white/20 backdrop-blur-lg p-8 rounded-2xl shadow-xl w-full max-w-3xl border border-white/30 space-y-6">
 
             <div>
                 <label class="text-white font-bold">Titlu:</label>
                 <input type="text" name="title" value="<?= htmlspecialchars($fitnessClass->getTitle()) ?>"
-                       class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold" required>
+                       class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold">
             </div>
 
             <div>
@@ -115,13 +124,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
                 <div>
                     <label class="text-white font-bold">Data:</label>
                     <input type="date" name="date" value="<?= $fitnessClass->getDate() ?>"
-                           class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold" required>
+                           class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold">
                 </div>
 
                 <div>
                     <label class="text-white font-bold">Ora:</label>
                     <input type="time" name="time" value="<?= $fitnessClass->getTime() ?>"
-                           class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold" required>
+                           class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold">
                 </div>
 
                 <div>
@@ -141,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
             <div>
                 <label class="text-white font-bold">Locație:</label>
                 <input type="text" name="location" value="<?= htmlspecialchars($fitnessClass->getLocation()) ?>"
-                       class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold" required>
+                       class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold">
             </div>
 
             <div class="flex justify-between pt-6">
@@ -151,13 +160,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
                 </button>
 
                 <button type="submit" name="delete"
-                        onclick="return confirm('Sigur vrei să ștergi această clasă?');"
                         class="bg-red-600 px-5 py-2 rounded text-white font-extrabold hover:scale-105 transition">
                     Șterge Clasa
                 </button>
             </div>
+
+            <div id="message" class="hidden bg-red-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center"></div>
         </form>
     </div>
+
+    <script>
+        const form = document.getElementById('editClassForm');
+        const messageDiv = document.getElementById('message');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const isDelete = event.submitter && event.submitter.name === 'delete';
+            
+            if (isDelete && !confirm('Sigur vrei să ștergi această clasă?')) {
+                return;
+            }
+            
+            const formData = new FormData(this);
+            
+            // Adaugă numele butonului apăsat
+            if (event.submitter && event.submitter.name) {
+                formData.append(event.submitter.name, event.submitter.value || '');
+            }
+            
+            postData(formData);
+        });
+        
+        async function postData(formData) {
+            try {
+                const response = await fetch('editClass.php?id=<?= $class_id ?>', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                console.log('Response status:', response.status);
+                const text = await response.text();
+                console.log('Response text:', text);
+                
+                const data = JSON.parse(text);
+                
+                messageDiv.classList.remove('hidden');
+                
+                if (data && data.success) {
+                    messageDiv.className = 'bg-green-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center';
+                    messageDiv.textContent = data.message;
+                    
+                    if (data.redirect) {
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 1500);
+                    } else {
+                        setTimeout(() => {
+                            messageDiv.classList.add('hidden');
+                        }, 3000);
+                    }
+                } else {
+                    messageDiv.className = 'bg-red-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center';
+                    messageDiv.textContent = data.message || 'A apărut o eroare.';
+                }
+            } catch (err) {
+                console.error(err);
+                messageDiv.classList.remove('hidden');
+                messageDiv.className = 'bg-red-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center';
+                messageDiv.textContent = 'A apărut o eroare. Te rugăm să încerci din nou.';
+            }
+        }
+    </script>
 
 </body>
 </html>

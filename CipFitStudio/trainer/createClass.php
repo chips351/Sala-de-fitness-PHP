@@ -2,34 +2,43 @@
 session_start();
 require_once "../models/FitnessClass.php";
 
-//check trainer session
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== "trainer") {
     die("Acces interzis.");
 }
 
+$trainer_id = $_SESSION['user_id'];
 $errorMessage = '';
 
 //procesare formular
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    header('Content-Type: application/json; charset=utf-8');
+    $response = ['success' => false, 'message' => ''];
+    
     try {
         $fitnessClass = new FitnessClass([
-            'trainer_id' => $_SESSION["user_id"],
-            'title' => $_POST["title"] ?? '',
-            'description' => $_POST["description"] ?? '',
-            'DATE' => $_POST["date"] ?? '',
-            'TIME' => $_POST["time"] ?? '',
-            'duration' => $_POST["duration"] ?? 0,
-            'max_clients' => $_POST["max_clients"] ?? 0,
-            'location' => $_POST["location"] ?? ''
+            'trainer_id' => $trainer_id,
+            'title' => $_POST['title'] ?? '',
+            'description' => $_POST['description'] ?? '',
+            'DATE' => $_POST['date'] ?? '',
+            'TIME' => $_POST['time'] ?? '',
+            'duration' => $_POST['duration'] ?? 0,
+            'max_clients' => $_POST['max_clients'] ?? 0,
+            'location' => $_POST['location'] ?? ''
         ]);
 
         $fitnessClass->create();
-        header("Location: trainerDashboard.php?created=1");
-        exit;
+        
+        $response['success'] = true;
+        $response['message'] = 'Clasa a fost creată cu succes!';
+        $response['redirect'] = 'viewClasses.php';
     } catch (Exception $e) {
-        $errorMessage = $e->getMessage();
+        $response['message'] = $e->getMessage();
     }
+    
+    echo json_encode($response);
+    exit;
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -74,58 +83,109 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
 
     <!-- Main content -->
-    <div class="relative z-10 flex justify-center items-center min-h-screen">
+    <div class="relative z-10 flex flex-col items-center min-h-screen pt-32 px-4">
+        
+        <h2 class="text-2xl font-extrabold text-white mb-6 drop-shadow-[0_0_5px_black] text-center">
+            Creează o nouă clasă
+        </h2>
 
-        <div class="bg-black/40
-                    backdrop-blur-md shadow-2xl rounded-3xl p-10 w-[500px]
-                    border border-white/30">
+        <form id="createClassForm" method="POST" class="bg-white/20 backdrop-blur-lg p-8 rounded-2xl shadow-xl w-full max-w-3xl border border-white/30 space-y-6">
 
-            <h2 class="text-3xl font-extrabold text-white text-center mb-10 drop-shadow-[0_0_5px_black]">
-                Creează o nouă clasă
-            </h2>
+            <div>
+                <label class="text-white font-bold">Titlu:</label>
+                <input type="text" name="title"
+                    class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold">
+            </div>
 
-            <?php if (!empty($errorMessage)): ?>
-                <div class="bg-red-500/80 text-white px-4 py-3 rounded-xl mb-4 font-semibold">
-                    <?= htmlspecialchars($errorMessage) ?>
+            <div>
+                <label class="text-white font-bold">Descriere:</label>
+                <textarea name="description" rows="4"
+                    class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold"></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6">
+
+                <div>
+                    <label class="text-white font-bold">Data:</label>
+                    <input type="date" name="date"
+                           class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold">
                 </div>
-            <?php endif; ?>
 
-            <form method="POST" class="flex flex-col gap-5">
+                <div>
+                    <label class="text-white font-bold">Ora:</label>
+                    <input type="time" name="time"
+                           class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold">
+                </div>
 
-                <input type="text" name="title" placeholder="Titlul clasei"
-                    class="w-full h-12 px-4 bg-white/30 text-white placeholder-white
-                           rounded-xl shadow focus:outline-none font-semibold" required>
+                <div>
+                    <label class="text-white font-bold">Durată (minute):</label>
+                    <input type="number" name="duration"
+                           class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold">
+                </div>
 
-                <textarea name="description" placeholder="Descriere"
-                    class="w-full px-4 py-3 bg-white/30 text-white placeholder-white
-                           rounded-xl shadow focus:outline-none font-semibold" rows="3"></textarea>
+                <div>
+                    <label class="text-white font-bold">Max clienți:</label>
+                    <input type="number" name="max_clients"
+                           class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold">
+                </div>
 
-                <input type="date" name="date"
-                    class="w-full h-12 px-4 bg-white/30 text-white rounded-xl shadow font-semibold" required>
+            </div>
 
-                <input type="time" name="time"
-                    class="w-full h-12 px-4 bg-white/30 text-white rounded-xl shadow font-semibold" required>
+            <div>
+                <label class="text-white font-bold">Locație:</label>
+                <input type="text" name="location"
+                       class="w-full bg-white/30 text-white px-3 py-2 rounded focus:outline-none font-semibold">
+            </div>
 
-                <input type="number" name="duration" placeholder="Durată (minute)"
-                    class="w-full h-12 px-4 bg-white/30 text-white placeholder-white
-                           rounded-xl shadow font-semibold">
+            <button type="submit"
+                    class="w-full bg-red-600 text-white text-lg font-extrabold py-3 rounded-xl shadow-lg hover:scale-105 transition">
+                Creează Clasa
+            </button>
 
-                <input type="number" name="max_clients" placeholder="Număr maxim clienți"
-                    class="w-full h-12 px-4 bg-white/30 text-white placeholder-white
-                           rounded-xl shadow font-semibold">
-
-                <input type="text" name="location" placeholder="Locație" required
-                    class="w-full h-12 px-4 bg-white/30 text-white placeholder-white
-                           rounded-xl shadow font-semibold">
-
-                <button
-                    class="w-full bg-[#D10000] text-white text-lg font-extrabold py-3 rounded-xl
-                           shadow-lg hover:scale-105 transition">
-                    Creează Clasa
-                </button>
+            <div id="message" class="hidden bg-red-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center"></div>
             </form>
-        </div>
     </div>
+
+    <script>
+        const form = document.getElementById('createClassForm');
+        const messageDiv = document.getElementById('message');
+        
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            postData(formData);
+        });
+        
+        async function postData(formData) {
+            try {
+                const response = await fetch('createClass.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                messageDiv.classList.remove('hidden');
+                
+                if (data && data.success) {
+                    messageDiv.className = 'bg-green-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center';
+                    messageDiv.textContent = data.message;
+                    
+                    setTimeout(() => {
+                        window.location.href = data.redirect;
+                    }, 1500);
+                } else {
+                    messageDiv.className = 'bg-red-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center';
+                    messageDiv.textContent = data.message || 'A apărut o eroare.';
+                }
+            } catch (err) {
+                console.error(err);
+                messageDiv.classList.remove('hidden');
+                messageDiv.className = 'bg-red-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center';
+                messageDiv.textContent = 'A apărut o eroare. Te rugăm să încerci din nou.';
+            }
+        }
+    </script>
 
 </body>
 
