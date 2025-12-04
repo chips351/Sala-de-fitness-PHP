@@ -74,7 +74,7 @@
                 form.addEventListener('submit', function(event) {
                     event.preventDefault(); // opreste refresh
                     const formattedFormData = {
-                        username: this.username.value,
+                        username: this.username.value, //this, adica form de mai sus
                         password: this.password.value
                     }
                     postData(formattedFormData);
@@ -90,24 +90,22 @@
 
                         const data = await response.json(); //raspunsul din login.php
 
-                        if (data && data.success) {
-                            messageDiv.className = 'text-green-600 font-bold text-lg mt-2';
-                            messageDiv.textContent = 'Login reușit!';
-                            setTimeout(() => {
-                                window.location.href = data.redirect || 'index.php';
-                            }, 1500);
-                        } else {
-                            messageDiv.className = 'text-red-600 font-medium mt-2';
-                            if (data && data.message) {
-                                messageDiv.textContent = data.message;
+                        if (data) {
+                            messageDiv.textContent = data.message;
+                            
+                            if (data.success) {
+                                messageDiv.className = 'text-green-600 font-bold text-lg mt-2';
+                                setTimeout(() => {
+                                    window.location.href = data.redirect || 'index.php';
+                                }, 1500);
                             } else {
-                                messageDiv.textContent = 'Login failed';
+                                messageDiv.className = 'text-red-600 font-medium mt-2';
                             }
                         }
                     } catch (err) {
                         console.error(err);
                         messageDiv.className = 'text-red-600 font-medium mt-2';
-                        messageDiv.textContent = 'Network error';
+                        messageDiv.textContent = err.message || 'Eroare de rețea';
                     }
                 }
             </script>

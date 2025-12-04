@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../app_config/connectDB.php';
-require_once '../app_config/operatiiDB.php';
+require_once '../models/User.php';
 
 header('Content-Type: application/json');
 
@@ -11,7 +11,6 @@ $password = trim($data['password'] ?? '');
 
 $response = ['success' => false];
 
-//validare
 if (!$username || !$password) {
     $response['message'] = 'Trebuie completate username și parola!';
     echo json_encode($response);
@@ -19,39 +18,37 @@ if (!$username || !$password) {
 }
 
 try {
-    $users = OperatiiDB::read('users', "WHERE username = :username", [':username' => $username]);
+    $user = User::findByUsername($username);
 
-    if (!$users) {
+    if (!$user) {
         $response['message'] = 'Username inexistent.';
         echo json_encode($response);
         exit;
     }
 
-    $user = $users[0];
-
-    if (!password_verify($password, $user['password'])) {
+    if (!$user->verifyPassword($password)) {
         $response['message'] = 'Parolă incorectă.';
         echo json_encode($response);
         exit;
     }
 
     //login reusit
-    $_SESSION['user_id'] = $user['id'];
-    $_SESSION['username'] = $user['username'];
-    $_SESSION['role'] = $user['role'];
-    $_SESSION['name'] = $user['name'];
+    $_SESSION['user_id'] = $user->getId();
+    $_SESSION['username'] = $user->getUsername();
+    $_SESSION['role'] = $user->getRole();
+    $_SESSION['name'] = $user->getName();
 
     $response['success'] = true;
     $response['message'] = 'Login reușit.';
-    $response['redirect'] = ($user['role'] === 'trainer')
+    $response['redirect'] = ($user->getRole() === 'trainer')
         ? '../trainer/trainerDashboard.php'
         : '../client/clientDashboard.php';
 
     echo json_encode($response);
     exit;
 
-} catch (PDOException $e) {
-    $response['message'] = "Eroare DB: " . $e->getMessage();
+} catch (Exception $e) {
+    $response['message'] = 'Eroare: ' . $e->getMessage();
     echo json_encode($response);
     exit;
 }

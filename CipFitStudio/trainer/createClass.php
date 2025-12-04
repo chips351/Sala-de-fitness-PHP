@@ -14,16 +14,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     header('Content-Type: application/json; charset=utf-8');
     $response = ['success' => false, 'message' => ''];
     
+    $data = json_decode(file_get_contents('php://input'), true);
+    
     try {
         $fitnessClass = new FitnessClass([
             'trainer_id' => $trainer_id,
-            'title' => $_POST['title'] ?? '',
-            'description' => $_POST['description'] ?? '',
-            'DATE' => $_POST['date'] ?? '',
-            'TIME' => $_POST['time'] ?? '',
-            'duration' => $_POST['duration'] ?? 0,
-            'max_clients' => $_POST['max_clients'] ?? 0,
-            'location' => $_POST['location'] ?? ''
+            'title' => $data['title'] ?? '',
+            'description' => $data['description'] ?? '',
+            'DATE' => $data['date'] ?? '',
+            'TIME' => $data['time'] ?? '',
+            'duration' => $data['duration'] ?? 0,
+            'max_clients' => $data['max_clients'] ?? 0,
+            'location' => $data['location'] ?? ''
         ]);
 
         $fitnessClass->create();
@@ -152,37 +154,46 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         
         form.addEventListener('submit', function(event) {
             event.preventDefault();
-            const formData = new FormData(this);
-            postData(formData);
+            const formattedFormData = {
+                title: this.title.value,
+                description: this.description.value,
+                date: this.date.value,
+                time: this.time.value,
+                duration: this.duration.value,
+                max_clients: this.max_clients.value,
+                location: this.location.value
+            };
+            postData(formattedFormData);
         });
         
-        async function postData(formData) {
+        async function postData(formattedFormData) {
             try {
                 const response = await fetch('createClass.php', {
                     method: 'POST',
-                    body: formData
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formattedFormData)
                 });
 
                 const data = await response.json();
                 
-                messageDiv.classList.remove('hidden');
-                
-                if (data && data.success) {
-                    messageDiv.className = 'bg-green-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center';
+                if (data) {
+                    messageDiv.classList.remove('hidden');
                     messageDiv.textContent = data.message;
                     
-                    setTimeout(() => {
-                        window.location.href = data.redirect;
-                    }, 1500);
-                } else {
-                    messageDiv.className = 'bg-red-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center';
-                    messageDiv.textContent = data.message || 'A apărut o eroare.';
+                    if (data.success) {
+                        messageDiv.className = 'bg-green-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center';
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 1500);
+                    } else {
+                        messageDiv.className = 'bg-red-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center';
+                    }
                 }
             } catch (err) {
                 console.error(err);
                 messageDiv.classList.remove('hidden');
                 messageDiv.className = 'bg-red-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center';
-                messageDiv.textContent = 'A apărut o eroare. Te rugăm să încerci din nou.';
+                messageDiv.textContent = err.message || 'Eroare de rețea';
             }
         }
     </script>

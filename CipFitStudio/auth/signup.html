@@ -146,24 +146,23 @@
 
                         const data = await response.json(); //raspunsul din signup.php
 
-                        if (data && data.success) {
-                            messageDiv.className = 'text-green-600 font-bold text-lg mt-2';
-                            messageDiv.textContent = 'Cont creat cu succes!';
-                            setTimeout(() => {
-                                window.location.href = data.redirect || 'login.html';
-                            }, 1500);
-                        } else {
-                            messageDiv.className = 'text-red-600 font-medium mt-2';
-                            if (data && data.message) {
-                                messageDiv.textContent = data.message;
+                        if (data) {
+                            messageDiv.textContent = data.message;
+                            
+                            if (data.success) {
+                                messageDiv.className = 'text-green-600 font-bold text-lg mt-2';
+                                setTimeout(() => {
+                                    window.location.href = data.redirect || 'login.html';
+                                }, 1500);
                             } else {
-                                messageDiv.textContent = 'Signup failed';
+                                messageDiv.className = 'text-red-600 font-medium mt-2';
                             }
                         }
+                        
                     } catch (err) {
                         console.error(err);
                         messageDiv.className = 'text-red-600 font-medium mt-2';
-                        messageDiv.textContent = 'Network error';
+                        messageDiv.textContent = err.message || 'Eroare de rețea';
                     }
                 }
             </script>

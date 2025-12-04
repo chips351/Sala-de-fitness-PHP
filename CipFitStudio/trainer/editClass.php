@@ -29,8 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json; charset=utf-8');
     $response = ['success' => false, 'message' => ''];
     
+    $data = json_decode(file_get_contents('php://input'), true);
+    
     // DELETE
-    if (isset($_POST['delete'])) {
+    if (isset($data['delete'])) {
         try {
             $fitnessClass->delete();
             
@@ -44,13 +46,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // UPDATE (default)
     else {
         try {
-            $fitnessClass->setTitle($_POST['title'] ?? '');
-            $fitnessClass->setDescription($_POST['description'] ?? '');
-            $fitnessClass->setDate($_POST['date'] ?? '');
-            $fitnessClass->setTime($_POST['time'] ?? '');
-            $fitnessClass->setDuration($_POST['duration'] ?? 0);
-            $fitnessClass->setMaxClients($_POST['max_clients'] ?? 0);
-            $fitnessClass->setLocation($_POST['location'] ?? '');
+            $fitnessClass->setTitle($data['title'] ?? '');
+            $fitnessClass->setDescription($data['description'] ?? '');
+            $fitnessClass->setDate($data['date'] ?? '');
+            $fitnessClass->setTime($data['time'] ?? '');
+            $fitnessClass->setDuration($data['duration'] ?? 0);
+            $fitnessClass->setMaxClients($data['max_clients'] ?? 0);
+            $fitnessClass->setLocation($data['location'] ?? '');
 
             $fitnessClass->update();
             
@@ -182,53 +184,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 return;
             }
             
-            const formData = new FormData(this);
+            const formattedFormData = {
+                title: this.title.value,
+                description: this.description.value,
+                date: this.date.value,
+                time: this.time.value,
+                duration: this.duration.value,
+                max_clients: this.max_clients.value,
+                location: this.location.value
+            };
             
-            // Adaugă numele butonului apăsat
             if (event.submitter && event.submitter.name) {
-                formData.append(event.submitter.name, event.submitter.value || '');
+                formattedFormData[event.submitter.name] = event.submitter.value || '';
             }
             
-            postData(formData);
+            postData(formattedFormData);
         });
         
-        async function postData(formData) {
+        async function postData(formattedFormData) {
             try {
                 const response = await fetch('editClass.php?id=<?= $class_id ?>', {
                     method: 'POST',
-                    body: formData
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formattedFormData)
                 });
 
-                console.log('Response status:', response.status);
-                const text = await response.text();
-                console.log('Response text:', text);
+                const data = await response.json();
                 
-                const data = JSON.parse(text);
-                
-                messageDiv.classList.remove('hidden');
-                
-                if (data && data.success) {
-                    messageDiv.className = 'bg-green-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center';
+                if (data) {
+                    messageDiv.classList.remove('hidden');
                     messageDiv.textContent = data.message;
                     
-                    if (data.redirect) {
-                        setTimeout(() => {
-                            window.location.href = data.redirect;
-                        }, 1500);
+                    if (data.success) {
+                        messageDiv.className = 'bg-green-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center';
+                        
+                        if (data.redirect) {
+                            setTimeout(() => {
+                                window.location.href = data.redirect;
+                            }, 1500);
+                        } else {
+                            setTimeout(() => {
+                                messageDiv.classList.add('hidden');
+                            }, 3000);
+                        }
                     } else {
-                        setTimeout(() => {
-                            messageDiv.classList.add('hidden');
-                        }, 3000);
+                        messageDiv.className = 'bg-red-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center';
                     }
-                } else {
-                    messageDiv.className = 'bg-red-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center';
-                    messageDiv.textContent = data.message || 'A apărut o eroare.';
                 }
             } catch (err) {
                 console.error(err);
                 messageDiv.classList.remove('hidden');
                 messageDiv.className = 'bg-red-500/80 text-white px-4 py-3 rounded-xl font-semibold text-center';
-                messageDiv.textContent = 'A apărut o eroare. Te rugăm să încerci din nou.';
+                messageDiv.textContent = err.message || 'Eroare de rețea';
             }
         }
     </script>
