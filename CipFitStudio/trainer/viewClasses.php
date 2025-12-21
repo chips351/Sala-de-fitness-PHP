@@ -108,7 +108,7 @@ $classes = FitnessClass::findByTrainer($trainer_id);
                                 <td class="px-2 py-3">
                                     <div class="flex flex-row gap-2 justify-start">
                                         <a href="editClass.php?id=<?= $cls->getId() ?>"
-                                            class="bg-red-600 px-3 py-1 rounded hover:scale-105 transition font-extrabold text-white inline-block">
+                                            class="bg-gray-600 px-3 py-1 rounded hover:scale-105 transition font-extrabold text-white inline-block">
                                             Editează
                                         </a>
 
@@ -116,7 +116,7 @@ $classes = FitnessClass::findByTrainer($trainer_id);
                                             <input type="hidden" name="delete_id" value="<?= $cls->getId() ?>">
                                             <button type="submit"
                                                 onclick="return confirm('Sigur vrei să ștergi această clasă?');"
-                                                class="bg-gray-600 px-3 py-1 rounded hover:scale-105 transition font-extrabold text-white">
+                                                class="bg-red-600 px-3 py-1 rounded hover:scale-105 transition font-extrabold text-white">
                                                 Șterge
                                             </button>
                                         </form>

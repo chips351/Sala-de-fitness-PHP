@@ -2,6 +2,8 @@
 session_start();
 require_once '../app_config/connectDB.php';
 require_once '../models/User.php';
+require_once '../app_config/operatiiDB.php';
+
 
 header('Content-Type: application/json');
 
@@ -20,14 +22,15 @@ if (!$username || !$password) {
 try {
     $user = User::findByUsername($username);
 
-    if (!$user) {
-        $response['message'] = 'Username inexistent.';
+    if (!$user || !$user->verifyPassword($password)) {
+        $response['message'] = 'Username sau parolă incorectă.';
         echo json_encode($response);
         exit;
     }
 
-    if (!$user->verifyPassword($password)) {
-        $response['message'] = 'Parolă incorectă.';
+    // doar daca credentials sunt corecte, verifică activarea
+    if ($user->getAccountActivationHash() !== null) {
+        $response['message'] = 'Contul nu este activat! Verifică emailul pentru link-ul de activare.';
         echo json_encode($response);
         exit;
     }
@@ -37,12 +40,22 @@ try {
     $_SESSION['username'] = $user->getUsername();
     $_SESSION['role'] = $user->getRole();
     $_SESSION['name'] = $user->getName();
+    $_SESSION['email'] = $user->getEmail();
+
 
     $response['success'] = true;
     $response['message'] = 'Login reușit.';
-    $response['redirect'] = ($user->getRole() === 'trainer')
-        ? '../trainer/trainerDashboard.php'
-        : '../client/clientDashboard.php';
+    if ($user->getRole() === 'trainer') {
+        $response['redirect'] = '../trainer/trainerDashboard.php';
+    } else {
+        // verifica daca userul are abonament activ
+        $abonamente = OperatiiDB::read('subscriptions', 'WHERE user_id = ? AND status = "active" AND end_date >= CURDATE()', [$user->getId()]);
+        if ($abonamente) {
+            $response['redirect'] = '../client/clientDashboard.php';
+        } else {
+            $response['redirect'] = '../client/chooseSubscription.php';
+        }
+    }
 
     echo json_encode($response);
     exit;

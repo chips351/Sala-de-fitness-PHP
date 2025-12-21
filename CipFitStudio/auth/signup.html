@@ -122,7 +122,7 @@
                 const messageDiv = document.getElementById('message');
                 
                 form.addEventListener('submit', function(event) {
-                    event.preventDefault(); // opreste refresh
+                    event.preventDefault();
                     const formattedFormData = {
                         name: this.name.value,
                         username: this.username.value,
@@ -131,20 +131,20 @@
                         role: this.role.value,
                         password: this.password.value,
                         confirm_password: this.confirm_password.value
-                    }
+                    };
                     console.log('Form data being sent:', formattedFormData);
                     postData(formattedFormData);
                 });
                 
                 async function postData(formattedFormData) {
                     try {
-                        const response = await fetch('signup.php', { //apelam signup.php
+                        const response = await fetch('signup.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(formattedFormData)
                         });
 
-                        const data = await response.json(); //raspunsul din signup.php
+                        const data = await response.json();
 
                         if (data) {
                             messageDiv.textContent = data.message;

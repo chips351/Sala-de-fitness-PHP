@@ -1,7 +1,29 @@
 <?php
 require_once '../app_config/operatiiDB.php';
 
-class FitnessClass {
+class FitnessClass
+{
+    // Returnează toate clasele ca array de obiecte FitnessClass
+    public static function findAll()
+    {
+        $rows = OperatiiDB::read('classes', 'ORDER BY date, time');
+        $out = [];
+        foreach ($rows as $row) {
+            $out[] = new FitnessClass($row);
+        }
+        return $out;
+    }
+
+    // Returnează toate clasele pentru un antrenor
+    public static function findByTrainer($trainerId)
+    {
+        $rows = OperatiiDB::read('classes', 'WHERE trainer_id = ?', [$trainerId]);
+        $out = [];
+        foreach ($rows as $row) {
+            $out[] = new FitnessClass($row);
+        }
+        return $out;
+    }
     private $id;
     private $trainerId;
     private $title;
@@ -12,7 +34,8 @@ class FitnessClass {
     private $maxClients;
     private $location;
 
-    public function __construct($data = []) {
+    public function __construct($data = [])
+    {
         $this->id = $data['id'] ?? null;
         $this->trainerId = $data['trainer_id'] ?? null;
         $this->title = $data['title'] ?? '';
@@ -25,26 +48,75 @@ class FitnessClass {
     }
 
     //getters
-    public function getId() { return $this->id; }
-    public function getTrainerId() { return $this->trainerId; }
-    public function getTitle() { return $this->title; }
-    public function getDescription() { return $this->description; }
-    public function getDate() { return $this->date; }
-    public function getTime() { return $this->time; }
-    public function getDuration() { return $this->duration; }
-    public function getMaxClients() { return $this->maxClients; }
-    public function getLocation() { return $this->location; }
+    public function getId()
+    {
+        return $this->id;
+    }
+    public function getTrainerId()
+    {
+        return $this->trainerId;
+    }
+    public function getTitle()
+    {
+        return $this->title;
+    }
+    public function getDescription()
+    {
+        return $this->description;
+    }
+    public function getDate()
+    {
+        return $this->date;
+    }
+    public function getTime()
+    {
+        return $this->time;
+    }
+    public function getDuration()
+    {
+        return $this->duration;
+    }
+    public function getMaxClients()
+    {
+        return $this->maxClients;
+    }
+    public function getLocation()
+    {
+        return $this->location;
+    }
 
     //setters
-    public function setTitle($title) { $this->title = $title;}
-    public function setDescription($description) { $this->description = $description; }
-    public function setDate($date) { $this->date = $date; }
-    public function setTime($time) { $this->time = $time; }
-    public function setDuration($duration) { $this->duration = $duration; }
-    public function setMaxClients($maxClients) { $this->maxClients = $maxClients; }
-    public function setLocation($location) { $this->location = $location; }
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+    public function setDate($date)
+    {
+        $this->date = $date;
+    }
+    public function setTime($time)
+    {
+        $this->time = $time;
+    }
+    public function setDuration($duration)
+    {
+        $this->duration = $duration;
+    }
+    public function setMaxClients($maxClients)
+    {
+        $this->maxClients = $maxClients;
+    }
+    public function setLocation($location)
+    {
+        $this->location = $location;
+    }
 
-    public function create() {
+    public function create()
+    {
         $errors = $this->validate();
         if (!empty($errors)) {
             throw new Exception($errors[0]); // Doar prima eroare
@@ -60,18 +132,20 @@ class FitnessClass {
             'max_clients' => $this->maxClients,
             'location' => $this->location
         ]);
-        
+
         $this->id = $id;
         return $id;
     }
 
-    public function update() {
+    public function update()
+    {
         $errors = $this->validate();
         if (!empty($errors)) {
             throw new Exception($errors[0]); // Doar prima eroare
         }
 
-        OperatiiDB::update('classes', 
+        OperatiiDB::update(
+            'classes',
             [
                 'title' => $this->title,
                 'description' => $this->description,
@@ -86,64 +160,64 @@ class FitnessClass {
         );
     }
 
-    public function delete() {
-        OperatiiDB::delete('classes', 
-            'id = :id AND trainer_id = :trainer_id', 
+    public function delete()
+    {
+        OperatiiDB::delete(
+            'classes',
+            'id = :id AND trainer_id = :trainer_id',
             [':id' => $this->id, ':trainer_id' => $this->trainerId]
         );
     }
 
-    public static function findById($id, $trainerId) {
-        $result = OperatiiDB::read('classes', 
-            'WHERE id = :id AND trainer_id = :trainer_id', 
+    public static function findById($id, $trainerId)
+    {
+        $result = OperatiiDB::read(
+            'classes',
+            'WHERE id = :id AND trainer_id = :trainer_id',
             [':id' => $id, ':trainer_id' => $trainerId]
         );
-        
+
         return $result ? new FitnessClass($result[0]) : null;
     }
 
-    public static function findByTrainer($trainerId) {
-        $results = OperatiiDB::read('classes', 
-            'WHERE trainer_id = :trainer_id ORDER BY date, time', 
-            [':trainer_id' => $trainerId]
-        );
-        
-        $classes = [];
-        foreach ($results as $row) {
-            $classes[] = new FitnessClass($row);
-        }
-        return $classes;
-    }
 
-    public static function findAvailable() {
+    public static function findAvailable()
+    {
         // TODO: Implementare pt clienti
     }
 
-    public function hasConflict() {
+    public function hasConflict()
+    {
         // TODO: Verifica daca trainerul are alta clasa la aceeasi data si ora
     }
 
-    public function isFull() {
+    public function isFull()
+    {
         // TODO: Verifica daca clasa e full
     }
 
-    public function getEnrolledCount() {
+    public function getEnrolledCount()
+    {
         // TODO: Returneaza nr de clienti inscrisi la o clasa
     }
 
-    public function enroll($clientId) {
+    public function enroll($clientId)
+    {
         // TODO: Inscrie un client la aceasta clasa
     }
 
-    public function unenroll($clientId) {
+    public function unenroll($clientId)
+    {
         // TODO: Sterge inscrierea unui client de la aceasta clasa
     }
 
-    public function isEnrolled($clientId) {
+    public function isEnrolled($clientId)
+    {
         // TODO: Verifica daca un client este deja inscris
     }
 
-    public function validate() {
+    public function validate()
+    {
         $errors = [];
 
         if (empty(trim($this->title))) {

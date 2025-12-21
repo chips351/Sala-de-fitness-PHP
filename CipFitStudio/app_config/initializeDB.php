@@ -12,11 +12,14 @@ try {
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
         username VARCHAR(100) UNIQUE NOT NULL,
-        email VARCHAR(100) NOT NULL,
+        email VARCHAR(100) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
         role ENUM('admin', 'trainer', 'client') NOT NULL,
         phone VARCHAR(20),
-        status ENUM('active', 'inactive') DEFAULT 'active'
+        status ENUM('active', 'inactive') DEFAULT 'active',
+        account_activation_hash VARCHAR(255) NULL,
+        forgotPasswordHash VARCHAR(255) NULL,
+        forgotPasswordExpires DATETIME NULL
     );
 
     CREATE TABLE IF NOT EXISTS classes (

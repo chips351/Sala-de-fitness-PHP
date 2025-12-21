@@ -55,7 +55,7 @@
             </div>
 
             <!-- Forgot password -->
-            <a href="#" class="text-sm text-black/80 font-semibold mt-1 mb-6 hover:underline">
+            <a href="forgotPassword.php" class="text-sm text-black/80 font-semibold mt-1 mb-6 hover:underline">
                 Forgot password?
             </a>
 
@@ -92,6 +92,11 @@
 
                         if (data) {
                             messageDiv.textContent = data.message;
+                            
+                            if (data.registration_message) {
+                                messageDiv.textContent = data.registration_message;
+                                messageDiv.className = 'text-red-600 font-medium mt-2';
+                            }
                             
                             if (data.success) {
                                 messageDiv.className = 'text-green-600 font-bold text-lg mt-2';

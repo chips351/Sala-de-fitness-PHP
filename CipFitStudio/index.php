@@ -55,10 +55,8 @@ session_start();
             </div>
         </div>
 
-        <!-- Buttons right -->
         <div class="flex gap-4 items-center">
             <?php if (isset($_SESSION['user_id'])): ?>
-                <!-- Vezi Clasele -->
                 <?php
                 $linkClasa = ($_SESSION['role'] === 'trainer') ? 'trainer/trainerDashboard.php' : 'client/clientDashboard.php';
                 ?>
@@ -67,25 +65,25 @@ session_start();
                     Vezi Clasele
                 </a>
 
-                <!-- Username cu dropdown -->
 
                 <div class="relative">
-                    <!-- Username button -->
                     <button id="userBtn"
                         class="text-white bg-[#D10000] px-5 py-2 rounded-md text-sm font-medium transform transition-all duration-200 hover:scale-110 text-center flex items-center gap-2">
                         <?php echo $_SESSION['username']; ?>
-                        <!-- sageata -->
                         <svg class="w-4 h-4 mt-0.5 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2"
                             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </button>
 
-                    <!-- dropdown -->
                     <div id="userDropdown"
-                        class="hidden absolute right-0 mt-2 bg-[#D10000] text-white rounded-md shadow-lg w-full z-20">
+                        class="hidden absolute right-0 mt-2 text-white rounded-md shadow-lg w-full z-20">
+                        <a href="client/editProfile.php"
+                            class="block px-5 py-2 rounded-md text-sm font-medium bg-[#D10000] hover:bg-[#B80000] transition text-center border-b border-white/20">
+                            Editează
+                        </a>
                         <a href="auth/logout.php"
-                            class="block px-5 py-2 rounded-md text-sm font-medium hover:bg-[#B80000] transition text-center">
+                            class="block px-5 mt-1 py-2 rounded-md text-sm font-medium bg-[#D10000] hover:bg-[#B80000] transition text-center">
                             Logout
                         </a>
                     </div>
