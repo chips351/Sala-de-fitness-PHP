@@ -44,6 +44,7 @@ class OperatiiDB {
         $sql = "UPDATE $tabel SET $setPart WHERE $conditie";
         $stmt = $conn->prepare($sql);
         $stmt->execute(array_merge($valori, $condParams)); //execute accepta un singur array
+        return $stmt->rowCount();
     }
 
     // DELETE

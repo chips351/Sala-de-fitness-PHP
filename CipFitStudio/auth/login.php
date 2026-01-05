@@ -45,7 +45,9 @@ try {
 
     $response['success'] = true;
     $response['message'] = 'Login reușit.';
-    if ($user->getRole() === 'trainer') {
+    if ($user->getRole() === 'admin') {
+        $response['redirect'] = '../admin/adminDashboard.php';
+    } elseif ($user->getRole() === 'trainer') {
         $response['redirect'] = '../trainer/trainerDashboard.php';
     } else {
         // verifica daca userul are abonament activ

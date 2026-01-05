@@ -39,15 +39,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         exit;
     }
     
-    // activeaza contul (hash-ul NULL)
-    OperatiiDB::update('users', 
-        ['account_activation_hash' => NULL], 
-        'id = :id', 
-        [':id' => $users[0]['id']]
-    );
+    // dacă există pending_email, mută-l peste email și golește pending_email și hash-ul
+    $userUpdateData = ['account_activation_hash' => NULL];
+    if (!empty($users[0]['pending_email'])) {
+        $userUpdateData['email'] = $users[0]['pending_email'];
+        $userUpdateData['pending_email'] = NULL;
+    }
+    OperatiiDB::update('users', $userUpdateData, 'id = :id', [':id' => $users[0]['id']]);
     
     $_SESSION['account_activated'] = true;
-    
     echo "<h1>Cont activat cu succes!</h1>";
     echo "<p>Contul tău a fost activat. Poți să te loghezi acum.</p>";
     echo "<p>Redirecționare către login...</p>";

@@ -58,11 +58,20 @@ session_start();
         <div class="flex gap-4 items-center">
             <?php if (isset($_SESSION['user_id'])): ?>
                 <?php
-                $linkClasa = ($_SESSION['role'] === 'trainer') ? 'trainer/trainerDashboard.php' : 'client/clientDashboard.php';
+                if ($_SESSION['role'] === 'admin') {
+                    $linkClasa = 'admin/adminDashboard.php';
+                    $labelClasa = 'Statistici';
+                } elseif ($_SESSION['role'] === 'trainer') {
+                    $linkClasa = 'trainer/trainerDashboard.php';
+                    $labelClasa = 'Vezi Clasele';
+                } else {
+                    $linkClasa = 'client/clientDashboard.php';
+                    $labelClasa = 'Vezi Clasele';
+                }
                 ?>
                 <a href="<?= $linkClasa ?>"
                     class="text-white bg-gray-600 px-5 py-2 rounded-md text-sm font-medium transform transition-all duration-200 hover:scale-110 text-center">
-                    Vezi Clasele
+                    <?= $labelClasa ?>
                 </a>
 
 
@@ -78,10 +87,12 @@ session_start();
 
                     <div id="userDropdown"
                         class="hidden absolute right-0 mt-2 text-white rounded-md shadow-lg w-full z-20">
-                        <a href="client/editProfile.php"
-                            class="block px-5 py-2 rounded-md text-sm font-medium bg-[#D10000] hover:bg-[#B80000] transition text-center border-b border-white/20">
-                            Editează
-                        </a>
+                        <?php if ($_SESSION['role'] !== 'admin'): ?>
+                            <a href="auth/editProfile.php"
+                                class="block px-5 py-2 rounded-md text-sm font-medium bg-[#D10000] hover:bg-[#B80000] transition text-center border-b border-white/20">
+                                Editează
+                            </a>
+                        <?php endif; ?>
                         <a href="auth/logout.php"
                             class="block px-5 mt-1 py-2 rounded-md text-sm font-medium bg-[#D10000] hover:bg-[#B80000] transition text-center">
                             Logout
@@ -101,6 +112,7 @@ session_start();
             class="text-white bg-[#D10000] px-5 py-2 rounded-md text-sm font-medium transform transition-all duration-200 hover:scale-110 text-center">
             Signup
         </a>
+
     <?php endif; ?>
     </div>
     </div>
@@ -110,13 +122,24 @@ session_start();
         <h1 class="text-red-600 text-2xl md:text-4xl font-extrabold drop-shadow-[0_0_3px_black]">
             Become the best version of yourself.
         </h1>
-        
+
         <a href="auth/signup.html"
             class="text-white bg-red-600 px-8 py-3 rounded-md text-lg font-medium transform transition-all duration-200 hover:scale-110 hover:bg-[#B80000] text-center drop-shadow-[0_0_3px_black] opacity-95">
             Get started
         </a>
     </div>
+    </div>
 
 </body>
+
+<a href="informatii-fitness.php"
+    class="bottom-8 left-8 fixed z-50 text-white bg-red-600 px-5 py-2 rounded-md text-sm font-medium transform transition-all duration-200 hover:scale-110 text-center">
+    Fitness Info
+</a>
+
+<a href="<?php echo isset($_SESSION['user_id']) ? 'contact.php' : 'auth/login.html'; ?>"
+    class="bottom-8 right-8 fixed z-50 text-white bg-red-600 px-5 py-2 rounded-md text-sm font-medium transform transition-all duration-200 hover:scale-110 text-center">
+    Contact
+</a>
 
 </html>

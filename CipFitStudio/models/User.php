@@ -50,6 +50,7 @@ class User
     private $name;
     private $username;
     private $email;
+    private $pending_email;
     private $password;
     private $role;
     private $phone;
@@ -62,6 +63,7 @@ class User
         $this->name = $data['name'] ?? '';
         $this->username = $data['username'] ?? '';
         $this->email = $data['email'] ?? '';
+        $this->pending_email = $data['pending_email'] ?? null;
         $this->password = $data['password'] ?? '';
         $this->role = $data['role'] ?? '';
         $this->phone = $data['phone'] ?? '';
@@ -85,6 +87,10 @@ class User
     public function getEmail()
     {
         return $this->email;
+    }
+    public function getPendingEmail()
+    {
+        return $this->pending_email;
     }
     public function getPassword()
     {
@@ -151,6 +157,10 @@ class User
     {
         $this->email = $email;
     }
+    public function setPendingEmail($pending_email)
+    {
+        $this->pending_email = $pending_email;
+    }
 
     public function setPhone($phone)
     {
@@ -161,17 +171,19 @@ class User
     {
         $this->password = $password;
     }
-
-    // Salvează modificările în baza de date
+ 
+    // Salveaza modificarile in db
     public function save()
     {
         $result = OperatiiDB::update('users', [
             'name' => $this->name,
             'email' => $this->email,
+            'pending_email' => $this->pending_email,
             'phone' => $this->phone,
+            'account_activation_hash' => $this->account_activation_hash,
             'password' => $this->password
         ], 'id = :id', [':id' => $this->id]);
-        return $result ? true : false;
+        return $result > 0; //update returneaza nr de randuri afectate
     }
 
     public function create($unhashedPassword, $confirmPassword)

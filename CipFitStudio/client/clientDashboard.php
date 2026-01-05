@@ -81,7 +81,7 @@ $clase_inscris = $user->getActiveClassRegistrations();
     <meta charset="UTF-8">
     <title>Client Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;

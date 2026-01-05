@@ -13,6 +13,7 @@ try {
         name VARCHAR(100) NOT NULL,
         username VARCHAR(100) UNIQUE NOT NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
+        pending_email VARCHAR(100) DEFAULT NULL,
         password VARCHAR(255) NOT NULL,
         role ENUM('admin', 'trainer', 'client') NOT NULL,
         phone VARCHAR(20),
