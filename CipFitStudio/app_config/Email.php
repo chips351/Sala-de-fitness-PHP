@@ -29,7 +29,7 @@ class Email {
             $mail->isHTML(true);
             $mail->Subject = 'Activare cont CipFit Studio';
             
-            $base_url = $_ENV['BASE_URL'] ?? 'http://localhost/CipFitStudio';
+            $base_url = $_ENV['BASE_URL'];
             $activation_link = "$base_url/auth/verify-email.php?token=$token";
             
             $mail->Body = "
@@ -68,8 +68,8 @@ class Email {
     public static function sendContactEmail($nume, $email, $subiect, $mesaj) {
         try {
             $mail = self::configure();
-            // Adresa la care ajung mesajele de contact (poate fi adresa adminului)
-            $mail->addAddress($_ENV['MAIL_USER'] ?? 'admin@example.com', 'CipFit Studio');
+            // Adresa la care ajung mesajele de contact
+            $mail->addAddress($_ENV['MAIL_USER'], 'CipFit Studio');
             $mail->isHTML(true);
             $mail->Subject = 'Contact CipFit Studio: ' . $subiect;
             $mail->Body = '<h2>Mesaj de contact de la: ' . htmlspecialchars($nume) . ' (' . htmlspecialchars($email) . ')</h2>' .

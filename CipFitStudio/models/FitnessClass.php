@@ -180,42 +180,6 @@ class FitnessClass
         return $result ? new FitnessClass($result[0]) : null;
     }
 
-
-    public static function findAvailable()
-    {
-        // TODO: Implementare pt clienti
-    }
-
-    public function hasConflict()
-    {
-        // TODO: Verifica daca trainerul are alta clasa la aceeasi data si ora
-    }
-
-    public function isFull()
-    {
-        // TODO: Verifica daca clasa e full
-    }
-
-    public function getEnrolledCount()
-    {
-        // TODO: Returneaza nr de clienti inscrisi la o clasa
-    }
-
-    public function enroll($clientId)
-    {
-        // TODO: Inscrie un client la aceasta clasa
-    }
-
-    public function unenroll($clientId)
-    {
-        // TODO: Sterge inscrierea unui client de la aceasta clasa
-    }
-
-    public function isEnrolled($clientId)
-    {
-        // TODO: Verifica daca un client este deja inscris
-    }
-
     public function validate()
     {
         $errors = [];

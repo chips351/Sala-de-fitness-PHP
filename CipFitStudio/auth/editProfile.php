@@ -33,10 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$parola = $data['parola'] ?? '';
 		$parolaNoua = $data['parola_noua'] ?? '';
 
-		// Reîncarcă userul din baza de date pentru a avea datele actualizate (inclusiv emailul confirmat)
+		// reincarca userul din baza de date pentru a avea datele actualizate (inclusiv emailul confirmat)
 		$user = User::findById($_SESSION['user_id']);
 
-		// Dacă există un hash de activare, dar utilizatorul a revenit la emailul original sau emailul a fost activat, elimină tokenul și permite salvarea
+		//dacă exista un hash de activare, dar utilizatorul a revenit la emailul original sau emailul a fost activat, elimina tokenul si permite salvarea
 		if ($user->getAccountActivationHash() !== null) {
 			if (strtolower($email) === strtolower($user->getEmail()) || !empty($_SESSION['account_activated'])) {
 				$user->setAccountActivationHash(null);
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			}
 		}
     
-		// Dacă emailul introdus este diferit de cel din baza de date, trimite email de activare și blochează modificările
+		// Daca emailul introdus este diferit de cel din baza de date, trimite email de activare si blocheaza modificarile
 		if (strtolower($email) !== strtolower($user->getEmail())) {
 			$errors = $user->validateEditProfile($nume, $email, $telefon, $parola, $parolaNoua, $user->getPassword());
 			if (!empty($errors)) {
@@ -86,9 +86,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 		$user->setName($nume);
 		$user->setPhone($telefon);
-		// Emailul se modifică doar după confirmare, nu aici
+		// Emailul se modifica doar după confirmare, nu aici
 
-		// Asigură-te că pending_email este golit dacă emailul nu se schimbă
 		$user->setPendingEmail(null);
 
 		if ($parolaNoua) {

@@ -18,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode($response);
         exit;
     }
-    // Validare structură email
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $response['message'] = 'Email-ul nu este valid!';
         echo json_encode($response);

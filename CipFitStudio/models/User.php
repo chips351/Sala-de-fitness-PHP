@@ -16,7 +16,7 @@ class User
         return $abonamente ? $abonamente[0] : null;
     }
 
-    // Returnează limita de clase în funcție de abonament
+    // Returneaza limita de clase in functie de abonament
     public function getMaxAllowedClasses()
     {
         $abonament = $this->getActiveSubscription();
@@ -33,14 +33,14 @@ class User
         }
     }
 
-    // Returnează toate clasele la care userul e înscris (array de id-uri)
+    // returneaza toate clasele la care userul e inscris (array de id-uri)
     public function getActiveClassRegistrations()
     {
         $inscrieri = OperatiiDB::read('class_registrations', 'WHERE client_id = ?', [$this->id]);
         return array_column($inscrieri, 'class_id');
     }
 
-    // Verifică dacă userul e înscris la o anumită clasă
+    // Verifica daca userul e inscris la o anumita clasa
     public function isEnrolledToClass($classId)
     {
         $inscrieri = $this->getActiveClassRegistrations();
@@ -113,7 +113,7 @@ class User
         return $this->account_activation_hash;
     }
 
-    // Validare pentru editare profil (fără username/rol)
+    // Validare pentru editare profil (fara username/rol)
     public function validateEditProfile($nume, $email, $telefon, $parola, $parolaNoua, $parolaCurentaHash)
     {
         $errors = [];
@@ -137,9 +137,7 @@ class User
         if ($parolaNoua && strlen($parolaNoua) < 6) {
             $errors[] = 'Parola nouă trebuie să aibă minim 6 caractere!';
         }
-        if ($parola && $parolaNoua === '') {
-            // Nu adăuga eroare dacă nu vrea să schimbe parola, doar dacă a completat ceva la parola nouă
-        }
+
         return $errors;
     }
 
